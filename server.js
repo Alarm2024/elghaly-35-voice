@@ -2,7 +2,8 @@
 //
 // 1. Serves static frontend in /public.
 // 2. Mints single-use AssemblyAI tokens at GET /api/voice-token (key stays server-side).
-// 3. Serves the locked system prompt at GET /api/session-config.
+// 3. Serves locked session config + Plumb seat catalog at GET /api/session-config.
+// 4. Health check at GET /api/health.
 
 import express from "express";
 import { readFileSync } from "node:fs";
@@ -22,19 +23,46 @@ const PORT = process.env.PORT || 3000;
 const TOKEN_TTL_SECONDS = 300;
 
 const GREETING =
-  "Hello — I'm Iris Desk Voice, the front-desk assistant for 35 and Iris. How can I help you today?";
+  "Hello. I'm Iris Desk Voice — the front desk for 35 and Plumb. Ask about earned credits, Telegram desk seats, or Iris. How may I help you?";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const SYSTEM_PROMPT = readFileSync(join(__dirname, "system-prompt.txt"), "utf8").trim();
+const SEATS_CONFIG = JSON.parse(readFileSync(join(__dirname, "seats.json"), "utf8"));
+
+const GET_SEAT_LINK_TOOL = {
+  type: "function",
+  name: "get_seat_link",
+  description:
+    "Return the Stripe Payment Link for a Plumb seat tier when the visitor wants to buy or asks about pricing. Call this when explaining Starter, Pro, or Source so the UI can highlight the Pay card.",
+  parameters: {
+    type: "object",
+    properties: {
+      tier: {
+        type: "string",
+        enum: ["starter", "pro", "source"],
+        description: "Plumb seat tier: starter ($299), pro ($699), or source ($1999).",
+      },
+    },
+    required: ["tier"],
+  },
+  execution_mode: "interactive",
+  timeout_seconds: 30,
+};
 
 const app = express();
 
 app.use(express.static(join(__dirname, "public")));
 
+app.get("/api/health", (_req, res) => {
+  res.json({ ok: true, seats: SEATS_CONFIG.seats.length });
+});
+
 app.get("/api/session-config", (_req, res) => {
   res.json({
     system_prompt: SYSTEM_PROMPT,
     greeting: GREETING,
+    seats: SEATS_CONFIG,
+    tools: [GET_SEAT_LINK_TOOL],
   });
 });
 
