@@ -80,6 +80,7 @@ function addBubble(role, text, meta) {
 const PITCH_LABELS = {
   telegram: "Telegram control",
   delivery: "We build · you continue",
+  sla: "Desk SLA",
   no_guarantee: "No guarantees",
   no_gratis: "Paid seats only",
 };
@@ -138,6 +139,12 @@ function renderSeatCards(seatsConfig) {
     summary.className = "summary";
     summary.textContent = seat.summary;
 
+    const sla = document.createElement("p");
+    sla.className = "seat-sla";
+    sla.textContent =
+      seatsConfig.delivery_sla ||
+      "Ready bot within 3.35 hours after payment — lucky-35 desk SLA.";
+
     const pay = document.createElement("a");
     pay.className = "pay-btn";
     pay.href = seat.payment_url;
@@ -145,7 +152,7 @@ function renderSeatCards(seatsConfig) {
     pay.rel = "noopener noreferrer";
     pay.textContent = "Purchase · $" + seat.price_usd.toLocaleString("en-US");
 
-    card.append(tier, price, summary, pay);
+    card.append(tier, price, summary, sla, pay);
     els.seatsGrid.appendChild(card);
   }
 }
