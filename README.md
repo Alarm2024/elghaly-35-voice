@@ -17,7 +17,7 @@ Real-time voice desk assistant for visitors of [iris-35.elghaly.dev](https://iri
 ### Two doors (never mixed)
 
 1. **35 credits** — earned only, never sold, no deposits, not equity. Mint closed until desk PnL.
-2. **Plumb seats** — paid ready desk hunt software you self-host (Starter / Pro / Source). **Telegram control** — menus, reports, eyes. **We build; you continue** — elghaly delivers bot + walkthrough; buyer operates after. **Desk SLA:** ready bot within **3.35 hours** after Stripe payment (lucky-35). As-is, no profit guarantees. No free seats. Titan/gRPC quoted separately after brief.
+2. **Plumb seats** — paid ready desk hunt software you self-host (Starter / Pro / Source). **Telegram control** — menus, reports, eyes. **We build; you continue** — elghaly delivers bot + walkthrough; buyer operates after. **Desk SLA:** ready bot within **3.35 hours** after Stripe payment (lucky-35). Paid seats only — no free trials. Titan/gRPC quoted separately after brief. As-is / no-guarantee terms live in the page footer fine print only.
 
 ### Voice + checkout
 

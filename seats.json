@@ -8,9 +8,9 @@
     "telegram": "You run the desk from Telegram — menus, reports, and eyes on the wire.",
     "delivery": "We build; you continue. elghaly delivers the ready bot and walkthrough. You operate after. Not a managed service unless you arrange paid follow-up.",
     "sla": "After Stripe payment, your ready bot arrives within 3.35 hours — lucky-35 desk SLA.",
-    "no_guarantee": "Software as-is. No profit, CLEAR, live edge, or launch guarantees — honest dry-run and training language only.",
     "no_gratis": "Seats are paid only (Starter / Pro / Source). No free trials, comp seats, or gratis bots. 35 credits are earned — never sold."
   },
+  "fine_print": "Plumb software is provided as-is. No profit, CLEAR, live edge, or launch guarantees. Desk SLA covers software delivery timing only — not trading outcomes. Honest dry-run and training language apply.",
   "delivery_sla": "Ready bot within 3.35 hours after payment — lucky-35 desk SLA.",
   "gallery_note": "Desk and Telegram UI photos will appear here in upcoming releases.",
   "seats": [
