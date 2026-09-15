@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Iris Desk Voice — 35 / Iris</title>
+    <style>
+      :root {
+        --bg: #0a0c10;
+        --panel: #12151c;
+        --panel-2: #1a1f2a;
+        --border: #2a3142;
+        --text: #e8eaf0;
+        --muted: #8b94a7;
+        --accent: #7c6cf0;
+        --accent-2: #5ec4a8;
+        --danger: #ef5b5b;
+        --user: #2a2f4a;
+        --agent: #1a2e28;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+          "Helvetica Neue", Arial, sans-serif;
+        background: var(--bg);
+        color: var(--text);
+        min-height: 100vh;
+      }
+      .app {
+        max-width: 920px;
+        margin: 0 auto;
+        padding: 32px 24px 64px;
+      }
+      header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 16px;
+        margin-bottom: 24px;
+        flex-wrap: wrap;
+      }
+      .brand h1 {
+        font-size: 22px;
+        font-weight: 600;
+        margin: 0 0 4px;
+      }
+      .brand p {
+        margin: 0;
+        font-size: 14px;
+        color: var(--muted);
+      }
+      .brand a {
+        color: var(--accent);
+        text-decoration: none;
+      }
+      .status {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 13px;
+        color: var(--muted);
+      }
+      .dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        background: var(--muted);
+      }
+      .dot.connecting {
+        background: #e6c25b;
+        animation: pulse 1.2s infinite;
+      }
+      .dot.connected {
+        background: var(--accent-2);
+      }
+      .dot.error {
+        background: var(--danger);
+      }
+      @keyframes pulse {
+        0%,
+        100% {
+          opacity: 1;
+        }
+        50% {
+          opacity: 0.35;
+        }
+      }
+      .config {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+        background: var(--panel);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 16px;
+        margin-bottom: 16px;
+      }
+      label {
+        display: block;
+        font-size: 12px;
+        color: var(--muted);
+        margin-bottom: 6px;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+      }
+      select {
+        width: 100%;
+        background: var(--panel-2);
+        color: var(--text);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 10px 12px;
+        font-size: 14px;
+        font-family: inherit;
+      }
+      .config .full {
+        grid-column: 1 / -1;
+      }
+      .locked-note {
+        font-size: 13px;
+        color: var(--muted);
+        line-height: 1.5;
+        padding: 10px 12px;
+        background: var(--panel-2);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+      }
+      .controls {
+        display: flex;
+        gap: 12px;
+        margin-bottom: 16px;
+        flex-wrap: wrap;
+      }
+      button {
+        font: inherit;
+        padding: 12px 18px;
+        border-radius: 8px;
+        border: 1px solid var(--border);
+        background: var(--panel-2);
+        color: var(--text);
+        cursor: pointer;
+        transition: background 0.15s ease, transform 0.05s ease;
+      }
+      button:hover:not(:disabled) {
+        background: #232a3b;
+      }
+      button:active:not(:disabled) {
+        transform: translateY(1px);
+      }
+      button:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+      button.primary {
+        background: var(--accent);
+        border-color: var(--accent);
+        color: #fff;
+        font-weight: 600;
+      }
+      button.primary:hover:not(:disabled) {
+        background: #6a5ad8;
+      }
+      button.danger {
+        background: var(--danger);
+        border-color: var(--danger);
+        color: #fff;
+        font-weight: 600;
+      }
+      .transcript {
+        background: var(--panel);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 16px;
+        height: 420px;
+        overflow-y: auto;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+      .empty {
+        margin: auto;
+        color: var(--muted);
+        font-size: 14px;
+        text-align: center;
+        max-width: 360px;
+        line-height: 1.5;
+      }
+      .bubble {
+        max-width: 78%;
+        padding: 10px 14px;
+        border-radius: 14px;
+        font-size: 15px;
+        line-height: 1.45;
+        white-space: pre-wrap;
+        word-wrap: break-word;
+      }
+      .bubble.user {
+        align-self: flex-end;
+        background: var(--user);
+        border-bottom-right-radius: 4px;
+      }
+      .bubble.agent {
+        align-self: flex-start;
+        background: var(--agent);
+        border-bottom-left-radius: 4px;
+      }
+      .bubble.partial {
+        opacity: 0.6;
+        font-style: italic;
+      }
+      .bubble .meta {
+        display: block;
+        font-size: 11px;
+        color: var(--muted);
+        margin-top: 4px;
+      }
+      footer {
+        margin-top: 16px;
+        color: var(--muted);
+        font-size: 12px;
+        text-align: center;
+        line-height: 1.6;
+      }
+      footer a {
+        color: var(--accent);
+        text-decoration: none;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="app">
+      <header>
+        <div class="brand">
+          <h1>Iris Desk Voice</h1>
+          <p>
+            Front-desk voice assistant for
+            <a href="https://iris-35.elghaly.dev/" target="_blank" rel="noopener"
+              >35 / Iris</a
+            >
+            — Wyndham Heaven / elghaly
+          </p>
+        </div>
+        <div class="status">
+          <span id="status-dot" class="dot"></span>
+          <span id="status-text">Disconnected</span>
+        </div>
+      </header>
+
+      <div class="config">
+        <div>
+          <label for="voice">Voice</label>
+          <select id="voice">
+            <option value="ivy" selected>Ivy (US, calm professional)</option>
+            <option value="sophie">Sophie (UK female)</option>
+            <option value="james">James (US, conversational)</option>
+            <option value="autumn">Autumn (US)</option>
+            <option value="oliver">Oliver (UK male)</option>
+          </select>
+        </div>
+        <div class="full">
+          <label>Desk policy (locked)</label>
+          <p class="locked-note">
+            System prompt is server-locked: earned-credits-only 35, mint closed,
+            no secrets or trading advice. Support:
+            <a href="mailto:support@elghaly.dev">support@elghaly.dev</a>
+          </p>
+        </div>
+      </div>
+
+      <div class="controls">
+        <button id="connect" class="primary">Connect &amp; talk</button>
+        <button id="disconnect" class="danger" disabled>Disconnect</button>
+        <button id="clear">Clear transcript</button>
+      </div>
+
+      <div id="transcript" class="transcript">
+        <p id="empty" class="empty">
+          Press <strong>Connect &amp; talk</strong>, allow microphone access, and
+          ask about 35 credits, SIGHT, or Iris. Never share wallet secrets.
+        </p>
+      </div>
+
+      <footer>
+        Powered by
+        <a
+          href="https://www.assemblyai.com/docs/voice-agent"
+          target="_blank"
+          rel="noopener"
+          >AssemblyAI Voice Agent API</a
+        >
+        · LabLab
+        <a
+          href="https://lablab.ai/ai-hackathons/assemblyai-voice-agent-hackathon/elghaly-35-voice"
+          target="_blank"
+          rel="noopener"
+          >elghaly-35-voice</a
+        >
+      </footer>
+    </div>
+
+    <script src="app.js" type="module"></script>
+  </body>
+</html>
