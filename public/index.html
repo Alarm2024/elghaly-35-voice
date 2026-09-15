@@ -482,6 +482,69 @@
       footer a:hover {
         color: var(--text-soft);
       }
+      .pitch-list {
+        display: grid;
+        gap: 14px;
+        margin: 0 0 32px;
+        padding: 0;
+        list-style: none;
+      }
+      .pitch-list li {
+        font-size: 13px;
+        color: var(--muted);
+        line-height: 1.7;
+        padding: 14px 18px;
+        background: rgba(0, 0, 0, 0.18);
+        border: 1px solid var(--border-soft);
+        border-radius: var(--radius-sm);
+      }
+      .pitch-list li strong {
+        display: block;
+        font-size: 11px;
+        font-weight: 500;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--text-soft);
+        margin-bottom: 6px;
+      }
+      .gallery-section {
+        margin-top: 36px;
+        padding-top: 28px;
+        border-top: 1px solid var(--border-soft);
+      }
+      .gallery-section h3 {
+        font-family: "Cormorant Garamond", Georgia, serif;
+        font-size: 20px;
+        font-weight: 500;
+        margin: 0 0 8px;
+        letter-spacing: 0.03em;
+      }
+      .gallery-note {
+        font-size: 13px;
+        color: var(--muted);
+        margin: 0 0 18px;
+        line-height: 1.65;
+      }
+      .gallery-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 12px;
+      }
+      .gallery-slot {
+        aspect-ratio: 4 / 3;
+        background: rgba(0, 0, 0, 0.25);
+        border: 1px dashed rgba(140, 120, 180, 0.2);
+        border-radius: var(--radius-sm);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 11px;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: rgba(138, 130, 152, 0.55);
+        text-align: center;
+        padding: 12px;
+      }
       @media (max-width: 640px) {
         .app {
           padding: 36px 20px 56px;
@@ -494,6 +557,9 @@
         }
         .brand h1 {
           font-size: 28px;
+        }
+        .gallery-grid {
+          grid-template-columns: 1fr;
         }
       }
     </style>
@@ -528,15 +594,28 @@
         <div class="seats-header">
           <h2>Plumb</h2>
           <p class="seats-intro" id="seats-tagline">
-            Ready desk hunt software you self-host. Lifetime license seats —
-            keys remain with you. Ask Iris about a tier; she will guide you to
-            the right checkout below.
+            Ready desk hunt software you self-host. Control the desk from
+            Telegram — menus, reports, eyes. Ask Iris about a tier; she will
+            guide you to the right checkout below.
           </p>
         </div>
+        <ul class="pitch-list" id="pitch-list"></ul>
         <div id="seats-grid" class="seats-grid"></div>
         <p class="credit-note" id="credit-note">
-          35 credits are earned only — not offered for sale.
+          35 credits are earned only — not offered for sale. No free bot seats.
         </p>
+        <div class="gallery-section" aria-label="Desk gallery placeholder">
+          <h3>Desk gallery</h3>
+          <p class="gallery-note" id="gallery-note">
+            Real Telegram and desk UI photos will appear here in upcoming
+            releases.
+          </p>
+          <div class="gallery-grid">
+            <div class="gallery-slot">Telegram menus</div>
+            <div class="gallery-slot">Desk reports</div>
+            <div class="gallery-slot">Wire eyes</div>
+          </div>
+        </div>
       </section>
 
       <section class="voice-section panel">
@@ -556,9 +635,9 @@
             <label>Desk policy</label>
             <p class="locked-note">
               <strong>35 credits</strong> are earned, never sold.
-              <strong>Plumb seats</strong> are licensed software you run
-              yourself. We do not request secrets or offer trading guidance.
-              Questions:
+              <strong>Plumb seats</strong> are paid software you run from
+              Telegram — we build and walk you through; you continue after.
+              As-is, no profit guarantees. No free seats. Questions:
               <a id="support-link" href="mailto:support@elghaly.dev"
                 >support@elghaly.dev</a
               >

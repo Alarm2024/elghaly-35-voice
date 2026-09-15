@@ -19,6 +19,8 @@ const els = {
   statusText: document.getElementById("status-text"),
   seatsGrid: document.getElementById("seats-grid"),
   seatsTagline: document.getElementById("seats-tagline"),
+  pitchList: document.getElementById("pitch-list"),
+  galleryNote: document.getElementById("gallery-note"),
   creditNote: document.getElementById("credit-note"),
   plumbLink: document.getElementById("plumb-link"),
   supportLink: document.getElementById("support-link"),
@@ -75,11 +77,35 @@ function addBubble(role, text, meta) {
   return div;
 }
 
+const PITCH_LABELS = {
+  telegram: "Telegram control",
+  delivery: "We build · you continue",
+  no_guarantee: "No guarantees",
+  no_gratis: "Paid seats only",
+};
+
+function renderPitchList(pitch) {
+  if (!pitch || !els.pitchList) return;
+  els.pitchList.innerHTML = "";
+  for (const key of Object.keys(PITCH_LABELS)) {
+    if (!pitch[key]) continue;
+    const li = document.createElement("li");
+    const title = document.createElement("strong");
+    title.textContent = PITCH_LABELS[key];
+    li.append(title, document.createTextNode(pitch[key]));
+    els.pitchList.appendChild(li);
+  }
+}
+
 function renderSeatCards(seatsConfig) {
   if (!seatsConfig?.seats?.length) return;
 
   els.seatsTagline.textContent = seatsConfig.tagline || els.seatsTagline.textContent;
   els.creditNote.textContent = seatsConfig.credit_note || els.creditNote.textContent;
+  if (seatsConfig.gallery_note && els.galleryNote) {
+    els.galleryNote.textContent = seatsConfig.gallery_note;
+  }
+  renderPitchList(seatsConfig.pitch);
 
   if (seatsConfig.product_url) {
     els.plumbLink.href = seatsConfig.product_url;

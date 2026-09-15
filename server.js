@@ -23,7 +23,7 @@ const PORT = process.env.PORT || 3000;
 const TOKEN_TTL_SECONDS = 300;
 
 const GREETING =
-  "Hello. I'm Iris Desk Voice — the front desk for 35 and Plumb. Ask about earned credits, desk software seats, or Iris. How may I help you?";
+  "Hello. I'm Iris Desk Voice — the front desk for 35 and Plumb. Ask about earned credits, Telegram desk seats, or Iris. How may I help you?";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const SYSTEM_PROMPT = readFileSync(join(__dirname, "system-prompt.txt"), "utf8").trim();

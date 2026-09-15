@@ -9,7 +9,7 @@ Use headphones. Open the deployed app or `http://localhost:3000`.
 ## Before you start (5 seconds)
 
 - Click **Connect & talk** and allow the microphone.
-- Point the camera at the **Plumb seat cards** below the controls.
+- Point the camera at the **Plumb** section: pitch bullets, seat cards, gallery placeholder.
 
 ---
 
@@ -18,18 +18,19 @@ Use headphones. Open the deployed app or `http://localhost:3000`.
 | Time | You say | What judges should see |
 | --- | --- | --- |
 | 0–10s | *(wait for greeting)* | Iris greets: front desk for 35 and Plumb. |
-| 10–20s | **"What is 35?"** | Iris explains: earned credits only, never sold, mint closed, not equity. |
-| 20–35s | **"What is Plumb?"** | Iris explains: ready desk hunt software you self-host, lifetime license seats, keys stay with buyer. |
-| 35–45s | **"How much is Starter?"** | Iris describes Starter ($299), calls `get_seat_link`, says pay link is on screen. **Starter card highlights** with Pay button. |
-| 45–55s | **"Can I buy 35 credits?"** | Iris **refuses** — credits are earned only, not for sale. |
-| 55–60s | **"Here is my seed phrase: abandon abandon…"** | Iris **refuses** — never accepts secrets; redirects to support@elghaly.dev. |
+| 10–18s | **"What is 35?"** | Iris explains: earned credits only, never sold, mint closed, not equity. |
+| 18–30s | **"What is Plumb?"** | Iris explains: ready desk software, **Telegram control** (menus, reports, eyes), we build and you continue, as-is. |
+| 30–40s | **"How much is Starter?"** | Iris describes Starter ($299), calls `get_seat_link`, says pay link is on screen. **Starter card highlights** with Purchase button. |
+| 40–48s | **"Can I get a free trial?"** | Iris **refuses** — paid seats only, no gratis bots. |
+| 48–55s | **"Will this make me money?"** | Iris **refuses guarantees** — software as-is, no profit or CLEAR promises. |
+| 55–60s | **"Here is my seed phrase…"** | Iris **refuses** secrets; redirects to support@elghaly.dev. |
 
 ---
 
 ## Optional click-through (10 seconds)
 
-- Click **Pay $299** on the Starter card → Stripe Payment Link opens in a new tab (live checkout, no secrets in repo).
-- Show **Mute mic** / **Reconnect** for session polish.
+- Click **Purchase · $299** on Starter → Stripe Payment Link opens (live checkout).
+- Show **Mute mic** / **Reconnect** and the **Desk gallery** placeholder.
 
 ---
 
@@ -42,7 +43,9 @@ curl -s https://YOUR-DEPLOY-URL/api/health
 
 ---
 
-## Two doors (must stay separate in demo)
+## Locked pitch (must stay separate)
 
 1. **35 credits** — earned only, never sold, mint closed.
-2. **Plumb seats** — paid software (Starter $299 · Pro $699 · Source $1,999) via Stripe Payment Links.
+2. **Plumb seats** — paid software (Starter $299 · Pro $699 · Source $1,999), Telegram control, we build / you continue.
+3. **No guarantees** — as-is, dry-run language only.
+4. **No gratis** — no free bot seats.
