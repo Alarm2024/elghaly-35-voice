@@ -1,0 +1,13 @@
+services:
+  - type: web
+    name: iris-desk-voice
+    runtime: node
+    plan: free
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /api/health
+    envVars:
+      - key: ASSEMBLYAI_API_KEY
+        sync: false
+      - key: NODE_VERSION
+        value: "20"

@@ -3,230 +3,498 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Iris Desk Voice — 35 / Iris</title>
+    <title>Iris Desk Voice — 35 / Plumb</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&display=swap"
+      rel="stylesheet"
+    />
     <style>
       :root {
-        --bg: #0a0c10;
-        --panel: #12151c;
-        --panel-2: #1a1f2a;
-        --border: #2a3142;
-        --text: #e8eaf0;
-        --muted: #8b94a7;
-        --accent: #7c6cf0;
-        --accent-2: #5ec4a8;
-        --danger: #ef5b5b;
-        --user: #2a2f4a;
-        --agent: #1a2e28;
+        --bg-deep: #07060b;
+        --bg: #0c0a12;
+        --panel: rgba(18, 14, 28, 0.72);
+        --panel-solid: #12101c;
+        --panel-2: rgba(26, 20, 40, 0.85);
+        --border: rgba(140, 120, 180, 0.14);
+        --border-soft: rgba(140, 120, 180, 0.08);
+        --text: #ece8f4;
+        --text-soft: #c8c0d8;
+        --muted: #8a8298;
+        --accent: #9d8ec7;
+        --accent-deep: #6b5b8a;
+        --accent-glow: rgba(157, 142, 199, 0.22);
+        --danger: #c47070;
+        --user: rgba(42, 34, 62, 0.9);
+        --agent: rgba(24, 28, 38, 0.92);
+        --highlight: rgba(36, 28, 56, 0.95);
+        --highlight-border: rgba(180, 160, 220, 0.45);
+        --radius: 14px;
+        --radius-sm: 10px;
+        --space: 28px;
       }
       * {
         box-sizing: border-box;
       }
+      html {
+        scroll-behavior: smooth;
+      }
       body {
         margin: 0;
-        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
-          "Helvetica Neue", Arial, sans-serif;
-        background: var(--bg);
+        font-family: "DM Sans", -apple-system, BlinkMacSystemFont, "Segoe UI",
+          sans-serif;
+        font-size: 15px;
+        font-weight: 400;
+        letter-spacing: 0.01em;
+        background: var(--bg-deep);
         color: var(--text);
         min-height: 100vh;
+        line-height: 1.6;
+      }
+      body::before {
+        content: "";
+        position: fixed;
+        inset: 0;
+        background:
+          radial-gradient(
+            ellipse 80% 50% at 50% -10%,
+            rgba(90, 70, 130, 0.18),
+            transparent 55%
+          ),
+          radial-gradient(
+            ellipse 60% 40% at 100% 80%,
+            rgba(60, 45, 90, 0.12),
+            transparent 50%
+          ),
+          linear-gradient(180deg, var(--bg-deep) 0%, var(--bg) 100%);
+        pointer-events: none;
+        z-index: 0;
       }
       .app {
+        position: relative;
+        z-index: 1;
         max-width: 920px;
         margin: 0 auto;
-        padding: 32px 24px 64px;
+        padding: 56px 32px 80px;
       }
       header {
         display: flex;
         justify-content: space-between;
         align-items: flex-start;
-        gap: 16px;
-        margin-bottom: 24px;
+        gap: 24px;
+        margin-bottom: 48px;
         flex-wrap: wrap;
       }
       .brand h1 {
-        font-size: 22px;
-        font-weight: 600;
-        margin: 0 0 4px;
+        font-family: "Cormorant Garamond", Georgia, serif;
+        font-size: 34px;
+        font-weight: 500;
+        letter-spacing: 0.02em;
+        margin: 0 0 10px;
+        color: var(--text);
       }
       .brand p {
         margin: 0;
         font-size: 14px;
         color: var(--muted);
+        max-width: 420px;
+        line-height: 1.65;
       }
       .brand a {
         color: var(--accent);
         text-decoration: none;
+        border-bottom: 1px solid transparent;
+        transition: border-color 0.2s ease, color 0.2s ease;
+      }
+      .brand a:hover {
+        color: var(--text-soft);
+        border-bottom-color: rgba(157, 142, 199, 0.35);
       }
       .status {
         display: inline-flex;
         align-items: center;
-        gap: 8px;
-        font-size: 13px;
+        gap: 10px;
+        font-size: 12px;
         color: var(--muted);
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        padding: 10px 16px;
+        background: var(--panel);
+        border: 1px solid var(--border-soft);
+        border-radius: 999px;
+        backdrop-filter: blur(12px);
       }
       .dot {
-        width: 10px;
-        height: 10px;
+        width: 7px;
+        height: 7px;
         border-radius: 50%;
         background: var(--muted);
+        box-shadow: 0 0 0 0 transparent;
       }
       .dot.connecting {
-        background: #e6c25b;
-        animation: pulse 1.2s infinite;
+        background: var(--accent);
+        box-shadow: 0 0 12px var(--accent-glow);
+        animation: breathe 2s ease-in-out infinite;
       }
       .dot.connected {
-        background: var(--accent-2);
+        background: var(--accent);
+        box-shadow: 0 0 10px var(--accent-glow);
       }
       .dot.error {
         background: var(--danger);
+        box-shadow: 0 0 10px rgba(196, 112, 112, 0.25);
       }
-      @keyframes pulse {
+      .dot.muted {
+        background: #a89860;
+        box-shadow: 0 0 8px rgba(168, 152, 96, 0.2);
+      }
+      @keyframes breathe {
         0%,
         100% {
           opacity: 1;
         }
         50% {
-          opacity: 0.35;
+          opacity: 0.45;
         }
+      }
+      @keyframes softGlow {
+        0%,
+        100% {
+          box-shadow: 0 0 0 0 rgba(157, 142, 199, 0.12),
+            0 8px 32px rgba(0, 0, 0, 0.25);
+        }
+        50% {
+          box-shadow: 0 0 0 1px rgba(180, 160, 220, 0.2),
+            0 12px 40px rgba(60, 40, 90, 0.2);
+        }
+      }
+      .panel {
+        background: var(--panel);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: var(--space);
+        margin-bottom: var(--space);
+        backdrop-filter: blur(16px);
       }
       .config {
         display: grid;
         grid-template-columns: 1fr 1fr;
-        gap: 16px;
-        background: var(--panel);
-        border: 1px solid var(--border);
-        border-radius: 12px;
-        padding: 16px;
-        margin-bottom: 16px;
+        gap: 20px;
       }
       label {
         display: block;
-        font-size: 12px;
+        font-size: 11px;
         color: var(--muted);
-        margin-bottom: 6px;
+        margin-bottom: 8px;
         text-transform: uppercase;
-        letter-spacing: 0.04em;
+        letter-spacing: 0.12em;
+        font-weight: 500;
       }
       select {
         width: 100%;
         background: var(--panel-2);
-        color: var(--text);
+        color: var(--text-soft);
         border: 1px solid var(--border);
-        border-radius: 8px;
-        padding: 10px 12px;
+        border-radius: var(--radius-sm);
+        padding: 12px 14px;
         font-size: 14px;
         font-family: inherit;
+        transition: border-color 0.2s ease;
+      }
+      select:focus {
+        outline: none;
+        border-color: rgba(157, 142, 199, 0.35);
       }
       .config .full {
         grid-column: 1 / -1;
       }
       .locked-note {
+        font-size: 14px;
+        color: var(--muted);
+        line-height: 1.7;
+        padding: 18px 20px;
+        background: rgba(0, 0, 0, 0.2);
+        border: 1px solid var(--border-soft);
+        border-radius: var(--radius-sm);
+        margin: 0;
+      }
+      .locked-note strong {
+        color: var(--text-soft);
+        font-weight: 500;
+      }
+      .locked-note a {
+        color: var(--accent);
+        text-decoration: none;
+      }
+      .seats-section {
+        margin-bottom: var(--space);
+      }
+      .seats-header {
+        margin-bottom: 32px;
+      }
+      .seats-section h2 {
+        font-family: "Cormorant Garamond", Georgia, serif;
+        font-size: 26px;
+        font-weight: 500;
+        letter-spacing: 0.03em;
+        margin: 0 0 12px;
+        color: var(--text);
+      }
+      .seats-intro {
+        font-size: 14px;
+        color: var(--muted);
+        margin: 0;
+        line-height: 1.75;
+        max-width: 540px;
+      }
+      .seats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(248px, 1fr));
+        gap: 20px;
+      }
+      .seat-card {
+        background: linear-gradient(
+          165deg,
+          rgba(22, 18, 34, 0.95) 0%,
+          rgba(14, 11, 22, 0.98) 100%
+        );
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 28px 24px 24px;
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+        transition: border-color 0.35s ease, transform 0.35s ease,
+          box-shadow 0.35s ease;
+      }
+      .seat-card:hover {
+        border-color: rgba(157, 142, 199, 0.22);
+        transform: translateY(-2px);
+        box-shadow: 0 12px 40px rgba(0, 0, 0, 0.28);
+      }
+      .seat-card.highlight {
+        border-color: var(--highlight-border);
+        background: var(--highlight);
+        animation: softGlow 2.4s ease-in-out 2;
+      }
+      .seat-card .tier {
+        font-family: "Cormorant Garamond", Georgia, serif;
+        font-size: 22px;
+        font-weight: 500;
+        letter-spacing: 0.04em;
+        margin: 0;
+        color: var(--text);
+      }
+      .seat-card .price {
+        font-family: "Cormorant Garamond", Georgia, serif;
+        font-size: 32px;
+        font-weight: 500;
+        color: var(--text-soft);
+        margin: 0;
+        letter-spacing: 0.02em;
+      }
+      .seat-card .price span {
+        font-size: 15px;
+        color: var(--muted);
+        font-family: "DM Sans", sans-serif;
+        font-weight: 400;
+        margin-left: 4px;
+      }
+      .seat-card .summary {
         font-size: 13px;
         color: var(--muted);
-        line-height: 1.5;
-        padding: 10px 12px;
-        background: var(--panel-2);
-        border: 1px solid var(--border);
-        border-radius: 8px;
+        line-height: 1.65;
+        margin: 0;
+        flex: 1;
+        padding-top: 4px;
+      }
+      .seat-card .pay-btn {
+        display: inline-block;
+        text-align: center;
+        padding: 13px 20px;
+        margin-top: 6px;
+        border-radius: var(--radius-sm);
+        background: transparent;
+        border: 1px solid rgba(157, 142, 199, 0.35);
+        color: var(--text-soft);
+        font-weight: 500;
+        font-size: 13px;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        text-decoration: none;
+        transition: background 0.25s ease, border-color 0.25s ease,
+          color 0.25s ease, box-shadow 0.25s ease;
+      }
+      .seat-card .pay-btn:hover {
+        background: rgba(157, 142, 199, 0.12);
+        border-color: rgba(180, 160, 220, 0.45);
+        color: var(--text);
+        box-shadow: 0 0 24px rgba(90, 70, 130, 0.15);
+      }
+      .seat-card.highlight .pay-btn {
+        border-color: rgba(200, 180, 230, 0.5);
+        background: rgba(157, 142, 199, 0.1);
+      }
+      .credit-note {
+        font-size: 12px;
+        color: var(--muted);
+        margin-top: 24px;
+        text-align: center;
+        letter-spacing: 0.04em;
+        opacity: 0.85;
+      }
+      .voice-section {
+        margin-bottom: var(--space);
+      }
+      .voice-section h2 {
+        font-family: "Cormorant Garamond", Georgia, serif;
+        font-size: 22px;
+        font-weight: 500;
+        margin: 0 0 20px;
+        letter-spacing: 0.03em;
       }
       .controls {
         display: flex;
-        gap: 12px;
-        margin-bottom: 16px;
+        gap: 10px;
+        margin-bottom: 20px;
         flex-wrap: wrap;
       }
       button {
         font: inherit;
-        padding: 12px 18px;
-        border-radius: 8px;
+        padding: 11px 20px;
+        border-radius: var(--radius-sm);
         border: 1px solid var(--border);
-        background: var(--panel-2);
-        color: var(--text);
+        background: rgba(20, 16, 30, 0.6);
+        color: var(--text-soft);
         cursor: pointer;
-        transition: background 0.15s ease, transform 0.05s ease;
+        font-size: 13px;
+        letter-spacing: 0.03em;
+        transition: background 0.2s ease, border-color 0.2s ease,
+          color 0.2s ease;
       }
       button:hover:not(:disabled) {
-        background: #232a3b;
-      }
-      button:active:not(:disabled) {
-        transform: translateY(1px);
+        background: rgba(30, 24, 44, 0.8);
+        border-color: rgba(157, 142, 199, 0.25);
+        color: var(--text);
       }
       button:disabled {
-        opacity: 0.5;
+        opacity: 0.38;
         cursor: not-allowed;
       }
       button.primary {
-        background: var(--accent);
-        border-color: var(--accent);
-        color: #fff;
-        font-weight: 600;
+        background: rgba(107, 91, 138, 0.35);
+        border-color: rgba(157, 142, 199, 0.4);
+        color: var(--text);
+        font-weight: 500;
       }
       button.primary:hover:not(:disabled) {
-        background: #6a5ad8;
+        background: rgba(107, 91, 138, 0.5);
+        box-shadow: 0 0 20px rgba(90, 70, 130, 0.12);
       }
-      button.danger {
-        background: var(--danger);
-        border-color: var(--danger);
-        color: #fff;
-        font-weight: 600;
+      button.ghost-danger {
+        border-color: rgba(196, 112, 112, 0.25);
+        color: rgba(196, 140, 140, 0.9);
+      }
+      button.ghost-danger:hover:not(:disabled) {
+        background: rgba(196, 112, 112, 0.08);
+        border-color: rgba(196, 112, 112, 0.35);
+      }
+      button.active {
+        border-color: rgba(168, 152, 96, 0.4);
+        color: #c4b890;
       }
       .transcript {
-        background: var(--panel);
-        border: 1px solid var(--border);
-        border-radius: 12px;
-        padding: 16px;
-        height: 420px;
+        background: rgba(0, 0, 0, 0.22);
+        border: 1px solid var(--border-soft);
+        border-radius: var(--radius);
+        padding: 24px;
+        height: 360px;
         overflow-y: auto;
         display: flex;
         flex-direction: column;
-        gap: 10px;
+        gap: 14px;
+      }
+      .transcript::-webkit-scrollbar {
+        width: 6px;
+      }
+      .transcript::-webkit-scrollbar-thumb {
+        background: rgba(140, 120, 180, 0.2);
+        border-radius: 3px;
       }
       .empty {
         margin: auto;
         color: var(--muted);
         font-size: 14px;
         text-align: center;
-        max-width: 360px;
-        line-height: 1.5;
+        max-width: 380px;
+        line-height: 1.75;
+      }
+      .empty strong {
+        color: var(--text-soft);
+        font-weight: 500;
       }
       .bubble {
-        max-width: 78%;
-        padding: 10px 14px;
-        border-radius: 14px;
-        font-size: 15px;
-        line-height: 1.45;
+        max-width: 82%;
+        padding: 14px 18px;
+        border-radius: 16px;
+        font-size: 14px;
+        line-height: 1.6;
         white-space: pre-wrap;
         word-wrap: break-word;
       }
       .bubble.user {
         align-self: flex-end;
         background: var(--user);
+        border: 1px solid rgba(140, 120, 180, 0.12);
         border-bottom-right-radius: 4px;
       }
       .bubble.agent {
         align-self: flex-start;
         background: var(--agent);
+        border: 1px solid var(--border-soft);
         border-bottom-left-radius: 4px;
       }
       .bubble.partial {
-        opacity: 0.6;
+        opacity: 0.55;
         font-style: italic;
       }
       .bubble .meta {
         display: block;
-        font-size: 11px;
+        font-size: 10px;
         color: var(--muted);
-        margin-top: 4px;
+        margin-top: 6px;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
       }
       footer {
-        margin-top: 16px;
+        margin-top: 48px;
         color: var(--muted);
         font-size: 12px;
         text-align: center;
-        line-height: 1.6;
+        line-height: 1.8;
+        letter-spacing: 0.02em;
       }
       footer a {
         color: var(--accent);
         text-decoration: none;
+      }
+      footer a:hover {
+        color: var(--text-soft);
+      }
+      @media (max-width: 640px) {
+        .app {
+          padding: 36px 20px 56px;
+        }
+        .config {
+          grid-template-columns: 1fr;
+        }
+        header {
+          margin-bottom: 36px;
+        }
+        .brand h1 {
+          font-size: 28px;
+        }
       }
     </style>
   </head>
@@ -236,11 +504,18 @@
         <div class="brand">
           <h1>Iris Desk Voice</h1>
           <p>
-            Front-desk voice assistant for
+            A calm front desk for
             <a href="https://iris-35.elghaly.dev/" target="_blank" rel="noopener"
               >35 / Iris</a
             >
-            — Wyndham Heaven / elghaly
+            and
+            <a
+              id="plumb-link"
+              href="https://github.com/Alarm2024/plumb35"
+              target="_blank"
+              rel="noopener"
+              >Plumb</a
+            >. Wyndham Heaven / elghaly.
           </p>
         </div>
         <div class="status">
@@ -249,49 +524,69 @@
         </div>
       </header>
 
-      <div class="config">
-        <div>
-          <label for="voice">Voice</label>
-          <select id="voice">
-            <option value="ivy" selected>Ivy (US, calm professional)</option>
-            <option value="sophie">Sophie (UK female)</option>
-            <option value="james">James (US, conversational)</option>
-            <option value="autumn">Autumn (US)</option>
-            <option value="oliver">Oliver (UK male)</option>
-          </select>
-        </div>
-        <div class="full">
-          <label>Desk policy (locked)</label>
-          <p class="locked-note">
-            System prompt is server-locked: earned-credits-only 35, mint closed,
-            no secrets or trading advice. Support:
-            <a href="mailto:support@elghaly.dev">support@elghaly.dev</a>
+      <section class="seats-section panel" aria-label="Plumb seat checkout">
+        <div class="seats-header">
+          <h2>Plumb</h2>
+          <p class="seats-intro" id="seats-tagline">
+            Ready desk hunt software you self-host. Lifetime license seats —
+            keys remain with you. Ask Iris about a tier; she will guide you to
+            the right checkout below.
           </p>
         </div>
-      </div>
-
-      <div class="controls">
-        <button id="connect" class="primary">Connect &amp; talk</button>
-        <button id="disconnect" class="danger" disabled>Disconnect</button>
-        <button id="clear">Clear transcript</button>
-      </div>
-
-      <div id="transcript" class="transcript">
-        <p id="empty" class="empty">
-          Press <strong>Connect &amp; talk</strong>, allow microphone access, and
-          ask about 35 credits, SIGHT, or Iris. Never share wallet secrets.
+        <div id="seats-grid" class="seats-grid"></div>
+        <p class="credit-note" id="credit-note">
+          35 credits are earned only — not offered for sale.
         </p>
-      </div>
+      </section>
+
+      <section class="voice-section panel">
+        <h2>Voice desk</h2>
+        <div class="config">
+          <div>
+            <label for="voice">Voice</label>
+            <select id="voice">
+              <option value="ivy" selected>Ivy — calm, professional</option>
+              <option value="sophie">Sophie — measured, UK</option>
+              <option value="james">James — conversational</option>
+              <option value="autumn">Autumn</option>
+              <option value="oliver">Oliver — UK</option>
+            </select>
+          </div>
+          <div class="full">
+            <label>Desk policy</label>
+            <p class="locked-note">
+              <strong>35 credits</strong> are earned, never sold.
+              <strong>Plumb seats</strong> are licensed software you run
+              yourself. We do not request secrets or offer trading guidance.
+              Questions:
+              <a id="support-link" href="mailto:support@elghaly.dev"
+                >support@elghaly.dev</a
+              >
+            </p>
+          </div>
+        </div>
+
+        <div class="controls">
+          <button id="connect" class="primary">Connect &amp; talk</button>
+          <button id="disconnect" class="ghost-danger" disabled>
+            Disconnect
+          </button>
+          <button id="reconnect" disabled>Reconnect</button>
+          <button id="mute" disabled>Mute mic</button>
+          <button id="clear">Clear transcript</button>
+        </div>
+
+        <div id="transcript" class="transcript">
+          <p id="empty" class="empty">
+            Select <strong>Connect &amp; talk</strong>, allow the microphone, and
+            ask about 35 credits, Plumb seats, or Iris. Please do not share
+            wallet secrets.
+          </p>
+        </div>
+      </section>
 
       <footer>
-        Powered by
-        <a
-          href="https://www.assemblyai.com/docs/voice-agent"
-          target="_blank"
-          rel="noopener"
-          >AssemblyAI Voice Agent API</a
-        >
-        · LabLab
+        AssemblyAI Voice Agent API · LabLab
         <a
           href="https://lablab.ai/ai-hackathons/assemblyai-voice-agent-hackathon/elghaly-35-voice"
           target="_blank"
