@@ -22,7 +22,8 @@ Real-time voice desk assistant for visitors of [iris-35.elghaly.dev](https://iri
 ### Voice + checkout
 
 - Explains 35, SIGHT, Iris FAQs, and Plumb seat tiers in plain English
-- **Sales mode:** when asked about price / buy / ready bot / Plumb — explains tier and highlights the matching **Stripe Payment Link** on screen
+- **Tier differences:** Starter (first machine, 1–2 pairs, capped) · Pro (multi-pair, slip/tip, RPC hooks) · Source (source + workshop, you change code). Titan/gRPC not in any seat.
+- **Sales mode:** when asked about price / buy / ready bot / Plumb / "what's the difference" — explains tier and highlights the matching **Stripe Payment Link** on screen
 - Three **Pay** cards on the page (no Stripe.js secrets in repo):
   - [Starter $299](https://buy.stripe.com/14A6oB4AD7GBd2g3QN3Ru00)
   - [Pro $699](https://buy.stripe.com/4gM00d4AD2mhfao1IF3Ru01)

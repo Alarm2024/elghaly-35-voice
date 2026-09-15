@@ -306,8 +306,29 @@
         color: var(--muted);
         line-height: 1.65;
         margin: 0;
-        flex: 1;
         padding-top: 4px;
+      }
+      .seat-card .seat-bullets {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        flex: 1;
+        display: grid;
+        gap: 6px;
+      }
+      .seat-card .seat-bullets li {
+        font-size: 12px;
+        color: var(--muted);
+        line-height: 1.5;
+        padding-left: 14px;
+        position: relative;
+      }
+      .seat-card .seat-bullets li::before {
+        content: "·";
+        position: absolute;
+        left: 0;
+        color: var(--accent);
+        opacity: 0.75;
       }
       .seat-card .seat-sla {
         font-size: 12px;
@@ -344,13 +365,18 @@
         border-color: rgba(200, 180, 230, 0.5);
         background: rgba(157, 142, 199, 0.1);
       }
-      .credit-note {
+      .credit-note,
+      .titan-note {
         font-size: 12px;
         color: var(--muted);
-        margin-top: 24px;
+        margin-top: 16px;
         text-align: center;
         letter-spacing: 0.04em;
         opacity: 0.85;
+        line-height: 1.65;
+      }
+      .credit-note {
+        margin-top: 24px;
       }
       .voice-section {
         margin-bottom: var(--space);
@@ -620,6 +646,7 @@
         </div>
         <ul class="pitch-list" id="pitch-list"></ul>
         <div id="seats-grid" class="seats-grid"></div>
+        <p class="titan-note" id="titan-note"></p>
         <p class="credit-note" id="credit-note">
           35 credits are earned only — not offered for sale. No free bot seats.
         </p>

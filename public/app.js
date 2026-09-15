@@ -22,6 +22,7 @@ const els = {
   pitchList: document.getElementById("pitch-list"),
   galleryNote: document.getElementById("gallery-note"),
   creditNote: document.getElementById("credit-note"),
+  titanNote: document.getElementById("titan-note"),
   plumbLink: document.getElementById("plumb-link"),
   supportLink: document.getElementById("support-link"),
   finePrint: document.getElementById("fine-print"),
@@ -143,12 +144,6 @@ function renderSeatCards(seatsConfig) {
     summary.className = "summary";
     summary.textContent = seat.summary;
 
-    const sla = document.createElement("p");
-    sla.className = "seat-sla";
-    sla.textContent =
-      seatsConfig.delivery_sla ||
-      "Ready bot within 3.35 hours after payment — lucky-35 desk SLA.";
-
     const pay = document.createElement("a");
     pay.className = "pay-btn";
     pay.href = seat.payment_url;
@@ -156,8 +151,32 @@ function renderSeatCards(seatsConfig) {
     pay.rel = "noopener noreferrer";
     pay.textContent = "Purchase · $" + seat.price_usd.toLocaleString("en-US");
 
-    card.append(tier, price, summary, sla, pay);
+    card.append(tier, price, summary);
+
+    if (seat.bullets?.length) {
+      const bullets = document.createElement("ul");
+      bullets.className = "seat-bullets";
+      for (const text of seat.bullets) {
+        const li = document.createElement("li");
+        li.textContent = text;
+        bullets.appendChild(li);
+      }
+      card.append(bullets);
+    } else {
+      const sla = document.createElement("p");
+      sla.className = "seat-sla";
+      sla.textContent =
+        seatsConfig.delivery_sla ||
+        "Ready bot within 3.35 hours after payment — lucky-35 desk SLA.";
+      card.append(sla);
+    }
+
+    card.append(pay);
     els.seatsGrid.appendChild(card);
+  }
+
+  if (seatsConfig.titan_note && els.titanNote) {
+    els.titanNote.textContent = seatsConfig.titan_note;
   }
 }
 
