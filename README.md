@@ -172,4 +172,4 @@ Serve over HTTPS for mic access on non-localhost origins.
 
 ## License
 
-Hackathon submission for LabLab AssemblyAI Voice Agent Hackathon, team elghaly-35-voice.
+[MIT](./LICENSE) © 2026 elghaly. Hackathon submission for LabLab AssemblyAI Voice Agent Hackathon, team elghaly-35-voice.
