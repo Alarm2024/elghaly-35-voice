@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Iris Desk Voice — 35 / Plumb</title>
+    <title>Iris Desk Voice</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -227,13 +227,13 @@
         color: var(--accent);
         text-decoration: none;
       }
-      .seats-section {
+      .links-section {
         margin-bottom: var(--space);
       }
-      .seats-header {
+      .links-header {
         margin-bottom: 32px;
       }
-      .seats-section h2 {
+      .links-section h2 {
         font-family: "Cormorant Garamond", Georgia, serif;
         font-size: 26px;
         font-weight: 500;
@@ -241,19 +241,19 @@
         margin: 0 0 12px;
         color: var(--text);
       }
-      .seats-intro {
+      .links-intro {
         font-size: 14px;
         color: var(--muted);
         margin: 0;
         line-height: 1.75;
         max-width: 540px;
       }
-      .seats-grid {
+      .links-grid {
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(248px, 1fr));
         gap: 20px;
       }
-      .seat-card {
+      .link-card {
         background: linear-gradient(
           165deg,
           rgba(22, 18, 34, 0.95) 0%,
@@ -268,17 +268,17 @@
         transition: border-color 0.35s ease, transform 0.35s ease,
           box-shadow 0.35s ease;
       }
-      .seat-card:hover {
+      .link-card:hover {
         border-color: rgba(157, 142, 199, 0.22);
         transform: translateY(-2px);
         box-shadow: 0 12px 40px rgba(0, 0, 0, 0.28);
       }
-      .seat-card.highlight {
+      .link-card.highlight {
         border-color: var(--highlight-border);
         background: var(--highlight);
         animation: softGlow 2.4s ease-in-out 2;
       }
-      .seat-card .tier {
+      .link-card .link-name {
         font-family: "Cormorant Garamond", Georgia, serif;
         font-size: 22px;
         font-weight: 500;
@@ -286,59 +286,14 @@
         margin: 0;
         color: var(--text);
       }
-      .seat-card .price {
-        font-family: "Cormorant Garamond", Georgia, serif;
-        font-size: 32px;
-        font-weight: 500;
-        color: var(--text-soft);
-        margin: 0;
-        letter-spacing: 0.02em;
-      }
-      .seat-card .price span {
-        font-size: 15px;
-        color: var(--muted);
-        font-family: "DM Sans", sans-serif;
-        font-weight: 400;
-        margin-left: 4px;
-      }
-      .seat-card .summary {
+      .link-card .summary {
         font-size: 13px;
         color: var(--muted);
         line-height: 1.65;
         margin: 0;
         padding-top: 4px;
       }
-      .seat-card .seat-bullets {
-        list-style: none;
-        margin: 0;
-        padding: 0;
-        flex: 1;
-        display: grid;
-        gap: 6px;
-      }
-      .seat-card .seat-bullets li {
-        font-size: 12px;
-        color: var(--muted);
-        line-height: 1.5;
-        padding-left: 14px;
-        position: relative;
-      }
-      .seat-card .seat-bullets li::before {
-        content: "·";
-        position: absolute;
-        left: 0;
-        color: var(--accent);
-        opacity: 0.75;
-      }
-      .seat-card .seat-sla {
-        font-size: 12px;
-        color: var(--accent);
-        line-height: 1.55;
-        margin: 0;
-        letter-spacing: 0.02em;
-        opacity: 0.9;
-      }
-      .seat-card .pay-btn {
+      .link-card .open-btn {
         display: inline-block;
         text-align: center;
         padding: 13px 20px;
@@ -355,28 +310,15 @@
         transition: background 0.25s ease, border-color 0.25s ease,
           color 0.25s ease, box-shadow 0.25s ease;
       }
-      .seat-card .pay-btn:hover {
+      .link-card .open-btn:hover {
         background: rgba(157, 142, 199, 0.12);
         border-color: rgba(180, 160, 220, 0.45);
         color: var(--text);
         box-shadow: 0 0 24px rgba(90, 70, 130, 0.15);
       }
-      .seat-card.highlight .pay-btn {
+      .link-card.highlight .open-btn {
         border-color: rgba(200, 180, 230, 0.5);
         background: rgba(157, 142, 199, 0.1);
-      }
-      .credit-note,
-      .titan-note {
-        font-size: 12px;
-        color: var(--muted);
-        margin-top: 16px;
-        text-align: center;
-        letter-spacing: 0.04em;
-        opacity: 0.85;
-        line-height: 1.65;
-      }
-      .credit-note {
-        margin-top: 24px;
       }
       .voice-section {
         margin-bottom: var(--space);
@@ -516,80 +458,6 @@
       footer a:hover {
         color: var(--text-soft);
       }
-      .fine-print {
-        display: block;
-        margin-top: 20px;
-        max-width: 640px;
-        margin-left: auto;
-        margin-right: auto;
-        font-size: 11px;
-        line-height: 1.65;
-        color: rgba(138, 130, 152, 0.75);
-        letter-spacing: 0.01em;
-      }
-      .pitch-list {
-        display: grid;
-        gap: 14px;
-        margin: 0 0 32px;
-        padding: 0;
-        list-style: none;
-      }
-      .pitch-list li {
-        font-size: 13px;
-        color: var(--muted);
-        line-height: 1.7;
-        padding: 14px 18px;
-        background: rgba(0, 0, 0, 0.18);
-        border: 1px solid var(--border-soft);
-        border-radius: var(--radius-sm);
-      }
-      .pitch-list li strong {
-        display: block;
-        font-size: 11px;
-        font-weight: 500;
-        letter-spacing: 0.1em;
-        text-transform: uppercase;
-        color: var(--text-soft);
-        margin-bottom: 6px;
-      }
-      .gallery-section {
-        margin-top: 36px;
-        padding-top: 28px;
-        border-top: 1px solid var(--border-soft);
-      }
-      .gallery-section h3 {
-        font-family: "Cormorant Garamond", Georgia, serif;
-        font-size: 20px;
-        font-weight: 500;
-        margin: 0 0 8px;
-        letter-spacing: 0.03em;
-      }
-      .gallery-note {
-        font-size: 13px;
-        color: var(--muted);
-        margin: 0 0 18px;
-        line-height: 1.65;
-      }
-      .gallery-grid {
-        display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        gap: 12px;
-      }
-      .gallery-slot {
-        aspect-ratio: 4 / 3;
-        background: rgba(0, 0, 0, 0.25);
-        border: 1px dashed rgba(140, 120, 180, 0.2);
-        border-radius: var(--radius-sm);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 11px;
-        letter-spacing: 0.08em;
-        text-transform: uppercase;
-        color: rgba(138, 130, 152, 0.55);
-        text-align: center;
-        padding: 12px;
-      }
       @media (max-width: 640px) {
         .app {
           padding: 36px 20px 56px;
@@ -603,9 +471,6 @@
         .brand h1 {
           font-size: 28px;
         }
-        .gallery-grid {
-          grid-template-columns: 1fr;
-        }
       }
     </style>
   </head>
@@ -617,16 +482,9 @@
           <p>
             A calm front desk for
             <a href="https://iris-35.elghaly.dev/" target="_blank" rel="noopener"
-              >35 / Iris</a
+              >Iris</a
             >
-            and
-            <a
-              id="plumb-link"
-              href="https://github.com/Alarm2024/plumb35"
-              target="_blank"
-              rel="noopener"
-              >Plumb</a
-            >. Wyndham Heaven / elghaly.
+            by elghaly, built on the AssemblyAI Voice Agent API.
           </p>
         </div>
         <div class="status">
@@ -635,33 +493,15 @@
         </div>
       </header>
 
-      <section class="seats-section panel" aria-label="Plumb seat checkout">
-        <div class="seats-header">
-          <h2>Plumb</h2>
-          <p class="seats-intro" id="seats-tagline">
-            Ready desk hunt software you self-host. Control the desk from
-            Telegram — menus, reports, eyes. Ask Iris about a tier; she will
-            guide you to the right checkout below.
+      <section class="links-section panel" aria-label="Desk links">
+        <div class="links-header">
+          <h2 id="links-title">Where Iris can point you</h2>
+          <p class="links-intro" id="links-intro">
+            Ask Iris a question out loud. When one of these fits, she highlights
+            the card so you can open it yourself.
           </p>
         </div>
-        <ul class="pitch-list" id="pitch-list"></ul>
-        <div id="seats-grid" class="seats-grid"></div>
-        <p class="titan-note" id="titan-note"></p>
-        <p class="credit-note" id="credit-note">
-          35 credits are earned only — not offered for sale. No free bot seats.
-        </p>
-        <div class="gallery-section" aria-label="Desk gallery placeholder">
-          <h3>Desk gallery</h3>
-          <p class="gallery-note" id="gallery-note">
-            Real Telegram and desk UI photos will appear here in upcoming
-            releases.
-          </p>
-          <div class="gallery-grid">
-            <div class="gallery-slot">Telegram menus</div>
-            <div class="gallery-slot">Desk reports</div>
-            <div class="gallery-slot">Wire eyes</div>
-          </div>
-        </div>
+        <div id="links-grid" class="links-grid"></div>
       </section>
 
       <section class="voice-section panel">
@@ -680,10 +520,9 @@
           <div class="full">
             <label>Desk policy</label>
             <p class="locked-note">
-              <strong>35 credits</strong> are earned, never sold.
-              <strong>Plumb seats</strong> are paid software you run from
-              Telegram — we build and walk you through; you continue after.
-              No free seats. Questions:
+              Iris answers questions about the Iris page and highlights the
+              right link. She never asks for seed phrases, private keys or
+              passwords, and she does not give financial advice. Questions:
               <a id="support-link" href="mailto:support@elghaly.dev"
                 >support@elghaly.dev</a
               >
@@ -704,8 +543,8 @@
         <div id="transcript" class="transcript">
           <p id="empty" class="empty">
             Select <strong>Connect &amp; talk</strong>, allow the microphone, and
-            ask about 35 credits, Plumb seats, or Iris. Please do not share
-            wallet secrets.
+            ask about the phone check, reading a transaction, or getting help.
+            Please do not share wallet secrets.
           </p>
         </div>
       </section>
@@ -718,7 +557,6 @@
           rel="noopener"
           >elghaly-35-voice</a
         >
-        <small id="fine-print" class="fine-print"></small>
       </footer>
     </div>
 

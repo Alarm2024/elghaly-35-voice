@@ -5,7 +5,7 @@ WORKDIR /app
 COPY package.json package-lock.json ./
 RUN npm ci --omit=dev
 
-COPY server.js system-prompt.txt seats.json ./
+COPY server.js system-prompt.txt desk.json ./
 COPY public ./public
 
 ENV PORT=3000

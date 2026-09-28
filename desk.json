@@ -1,0 +1,35 @@
+{
+  "title": "Where Iris can point you",
+  "intro": "Ask Iris a question out loud. When one of these fits, she highlights the card so you can open it yourself.",
+  "support_email": "support@elghaly.dev",
+  "links": [
+    {
+      "id": "phone_check",
+      "name": "Phone check",
+      "summary": "An iPhone and Android checklist on the Iris page. Tap what you see; the page classes the phone A / B / C and tells you what to remove yourself.",
+      "url": "https://iris-35.elghaly.dev/#desk",
+      "label": "Open phone check"
+    },
+    {
+      "id": "chain_read",
+      "name": "Chain read",
+      "summary": "Paste a public Solana signature, Bitcoin txid or Ethereum hash and the page names what was actually signed, such as unlimited approvals or SetAuthority.",
+      "url": "https://iris-35.elghaly.dev/#sig",
+      "label": "Open chain read"
+    },
+    {
+      "id": "iris_page",
+      "name": "Iris page",
+      "summary": "The full Iris page: runs in your own browser, works offline once loaded, and is available in six languages.",
+      "url": "https://iris-35.elghaly.dev/",
+      "label": "Open Iris"
+    },
+    {
+      "id": "support",
+      "name": "Human support",
+      "summary": "Write to the elghaly desk by email. Never include seed phrases, private keys or passwords.",
+      "url": "mailto:support@elghaly.dev",
+      "label": "Email support"
+    }
+  ]
+}

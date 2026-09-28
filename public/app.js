@@ -1,7 +1,7 @@
 // Iris Desk Voice — AssemblyAI Voice Agent browser client.
 //
 // Flow: session-config + voice-token from server → WebSocket → PCM mic up, audio down.
-// Client tool get_seat_link highlights Plumb seat cards and returns Stripe URLs.
+// Client tool show_link highlights a desk link card and returns its URL.
 
 const SAMPLE_RATE = 24_000;
 const WS_URL = "wss://agents.assemblyai.com/v1/ws";
@@ -17,19 +17,14 @@ const els = {
   empty: document.getElementById("empty"),
   statusDot: document.getElementById("status-dot"),
   statusText: document.getElementById("status-text"),
-  seatsGrid: document.getElementById("seats-grid"),
-  seatsTagline: document.getElementById("seats-tagline"),
-  pitchList: document.getElementById("pitch-list"),
-  galleryNote: document.getElementById("gallery-note"),
-  creditNote: document.getElementById("credit-note"),
-  titanNote: document.getElementById("titan-note"),
-  plumbLink: document.getElementById("plumb-link"),
+  linksGrid: document.getElementById("links-grid"),
+  linksTitle: document.getElementById("links-title"),
+  linksIntro: document.getElementById("links-intro"),
   supportLink: document.getElementById("support-link"),
-  finePrint: document.getElementById("fine-print"),
 };
 
 let sessionConfig = null;
-let seatsById = {};
+let linksById = {};
 let ws = null;
 let audioCtx = null;
 let micStream = null;
@@ -79,113 +74,55 @@ function addBubble(role, text, meta) {
   return div;
 }
 
-const PITCH_ORDER = ["telegram", "delivery", "sla", "no_gratis"];
-const PITCH_LABELS = {
-  telegram: "Telegram control",
-  delivery: "We build · you continue",
-  sla: "3.35h delivery",
-  no_gratis: "Paid seats",
-};
+function renderLinkCards(deskConfig) {
+  if (!deskConfig?.links?.length) return;
 
-function renderPitchList(pitch) {
-  if (!pitch || !els.pitchList) return;
-  els.pitchList.innerHTML = "";
-  for (const key of PITCH_ORDER) {
-    if (!pitch[key]) continue;
-    const li = document.createElement("li");
-    const title = document.createElement("strong");
-    title.textContent = PITCH_LABELS[key];
-    li.append(title, document.createTextNode(pitch[key]));
-    els.pitchList.appendChild(li);
-  }
-}
-
-function renderSeatCards(seatsConfig) {
-  if (!seatsConfig?.seats?.length) return;
-
-  els.seatsTagline.textContent = seatsConfig.tagline || els.seatsTagline.textContent;
-  els.creditNote.textContent = seatsConfig.credit_note || els.creditNote.textContent;
-  if (seatsConfig.gallery_note && els.galleryNote) {
-    els.galleryNote.textContent = seatsConfig.gallery_note;
-  }
-  renderPitchList(seatsConfig.pitch);
-  if (seatsConfig.fine_print && els.finePrint) {
-    els.finePrint.textContent = seatsConfig.fine_print;
+  if (deskConfig.title) els.linksTitle.textContent = deskConfig.title;
+  if (deskConfig.intro) els.linksIntro.textContent = deskConfig.intro;
+  if (deskConfig.support_email) {
+    els.supportLink.href = "mailto:" + deskConfig.support_email;
+    els.supportLink.textContent = deskConfig.support_email;
   }
 
-  if (seatsConfig.product_url) {
-    els.plumbLink.href = seatsConfig.product_url;
-  }
-  if (seatsConfig.support_email) {
-    els.supportLink.href = "mailto:" + seatsConfig.support_email;
-    els.supportLink.textContent = seatsConfig.support_email;
-  }
+  linksById = {};
+  els.linksGrid.innerHTML = "";
 
-  seatsById = {};
-  els.seatsGrid.innerHTML = "";
-
-  for (const seat of seatsConfig.seats) {
-    seatsById[seat.id] = seat;
+  for (const link of deskConfig.links) {
+    linksById[link.id] = link;
 
     const card = document.createElement("article");
-    card.className = "seat-card";
-    card.id = "seat-" + seat.id;
-    card.dataset.tier = seat.id;
+    card.className = "link-card";
+    card.id = "link-" + link.id;
+    card.dataset.topic = link.id;
 
-    const tier = document.createElement("h3");
-    tier.className = "tier";
-    tier.textContent = seat.name;
-
-    const price = document.createElement("p");
-    price.className = "price";
-    price.textContent = "$" + seat.price_usd.toLocaleString("en-US");
+    const name = document.createElement("h3");
+    name.className = "link-name";
+    name.textContent = link.name;
 
     const summary = document.createElement("p");
     summary.className = "summary";
-    summary.textContent = seat.summary;
+    summary.textContent = link.summary;
 
-    const pay = document.createElement("a");
-    pay.className = "pay-btn";
-    pay.href = seat.payment_url;
-    pay.target = "_blank";
-    pay.rel = "noopener noreferrer";
-    pay.textContent = "Purchase · $" + seat.price_usd.toLocaleString("en-US");
-
-    card.append(tier, price, summary);
-
-    if (seat.bullets?.length) {
-      const bullets = document.createElement("ul");
-      bullets.className = "seat-bullets";
-      for (const text of seat.bullets) {
-        const li = document.createElement("li");
-        li.textContent = text;
-        bullets.appendChild(li);
-      }
-      card.append(bullets);
-    } else {
-      const sla = document.createElement("p");
-      sla.className = "seat-sla";
-      sla.textContent =
-        seatsConfig.delivery_sla ||
-        "Ready bot within 3.35 hours after payment — lucky-35 desk SLA.";
-      card.append(sla);
+    const open = document.createElement("a");
+    open.className = "open-btn";
+    open.href = link.url;
+    if (!link.url.startsWith("mailto:")) {
+      open.target = "_blank";
+      open.rel = "noopener noreferrer";
     }
+    open.textContent = link.label || "Open";
 
-    card.append(pay);
-    els.seatsGrid.appendChild(card);
-  }
-
-  if (seatsConfig.titan_note && els.titanNote) {
-    els.titanNote.textContent = seatsConfig.titan_note;
+    card.append(name, summary, open);
+    els.linksGrid.appendChild(card);
   }
 }
 
-function highlightSeat(tierId) {
-  const id = String(tierId || "").toLowerCase();
-  const card = document.getElementById("seat-" + id);
+function highlightCard(topicId) {
+  const id = String(topicId || "").toLowerCase();
+  const card = document.getElementById("link-" + id);
   if (!card) return;
 
-  document.querySelectorAll(".seat-card.highlight").forEach((el) => {
+  document.querySelectorAll(".link-card.highlight").forEach((el) => {
     el.classList.remove("highlight");
   });
 
@@ -198,47 +135,25 @@ function highlightSeat(tierId) {
   }, 8000);
 }
 
-function detectTierInText(text) {
-  const lower = text.toLowerCase();
-  if (/\bstarter\b/.test(lower)) return "starter";
-  if (/\bsource\b/.test(lower)) return "source";
-  if (/\bpro\b/.test(lower)) return "pro";
-  return null;
-}
-
-function maybeHighlightFromAgentText(text) {
-  if (!text) return;
-  const lower = text.toLowerCase();
-  const mentionsPay =
-    lower.includes("pay link") ||
-    lower.includes("on your screen") ||
-    lower.includes("highlight");
-  if (!mentionsPay) return;
-
-  const tier = detectTierInText(lower);
-  if (tier) highlightSeat(tier);
-}
-
-function getSeatLink(tier) {
-  const id = String(tier || "").toLowerCase();
-  const seat = seatsById[id];
-  if (!seat) {
+function showLink(topic) {
+  const id = String(topic || "").toLowerCase();
+  const link = linksById[id];
+  if (!link) {
     return {
       ok: false,
-      error: "Unknown tier. Use starter, pro, or source.",
-      available: Object.keys(seatsById),
+      error: "Unknown topic.",
+      available: Object.keys(linksById),
     };
   }
 
-  highlightSeat(id);
+  highlightCard(id);
 
   return {
     ok: true,
-    tier: id,
-    name: seat.name,
-    price_usd: seat.price_usd,
-    payment_url: seat.payment_url,
-    message: "Pay link shown on screen for " + seat.name + ".",
+    topic: id,
+    name: link.name,
+    url: link.url,
+    message: link.name + " is highlighted on the visitor's screen.",
   };
 }
 
@@ -308,7 +223,7 @@ async function connect() {
 
   try {
     sessionConfig = await fetchSessionConfig();
-    renderSeatCards(sessionConfig.seats);
+    renderLinkCards(sessionConfig.desk);
   } catch (err) {
     console.error(err);
     setStatus("error", "Config error");
@@ -445,7 +360,6 @@ function handleEvent(event) {
       } else {
         addBubble("agent", event.text);
       }
-      maybeHighlightFromAgentText(event.text);
       const meta = event.interrupted ? "interrupted" : null;
       if (meta) {
         const bubbles = els.transcript.querySelectorAll(".bubble.agent");
@@ -461,9 +375,9 @@ function handleEvent(event) {
     }
 
     case "tool.call": {
-      if (event.name === "get_seat_link") {
-        const tier = event.arguments?.tier;
-        const result = getSeatLink(tier);
+      if (event.name === "show_link") {
+        const topic = event.arguments?.topic;
+        const result = showLink(topic);
         queueToolResult(event.call_id, result);
       } else {
         queueToolResult(event.call_id, {
@@ -578,10 +492,10 @@ function arrayBufferToBase64(buf) {
   return btoa(binary);
 }
 
-// Pre-load seat cards before first connect so Pay buttons are always visible.
+// Pre-load desk link cards before first connect.
 fetchSessionConfig()
-  .then((cfg) => renderSeatCards(cfg.seats))
-  .catch((err) => console.warn("Seat catalog preload failed:", err));
+  .then((cfg) => renderLinkCards(cfg.desk))
+  .catch((err) => console.warn("Desk link preload failed:", err));
 
 els.connect.addEventListener("click", connect);
 els.disconnect.addEventListener("click", disconnect);
