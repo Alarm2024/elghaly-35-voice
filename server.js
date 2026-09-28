@@ -1,8 +1,8 @@
 // Iris Desk Voice — lightweight Node server.
 //
 // 1. Serves static frontend in /public.
-// 2. Mints single-use AssemblyAI tokens at GET /api/voice-token (key stays server-side).
-// 3. Serves locked session config + Plumb seat catalog at GET /api/session-config.
+// 2. Issues single-use AssemblyAI tokens at GET /api/voice-token (key stays server-side).
+// 3. Serves locked session config + desk link catalog at GET /api/session-config.
 // 4. Health check at GET /api/health.
 
 import express from "express";
@@ -23,27 +23,28 @@ const PORT = process.env.PORT || 3000;
 const TOKEN_TTL_SECONDS = 300;
 
 const GREETING =
-  "Hello. I'm Iris Desk Voice — the front desk for 35 and Plumb. Ask about earned credits, Telegram desk seats, or Iris. How may I help you?";
+  "Hello. I'm Iris Desk Voice, the front desk for the Iris page. I can explain the phone check, help you read what a transaction signed, or point you to support. How may I help?";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const SYSTEM_PROMPT = readFileSync(join(__dirname, "system-prompt.txt"), "utf8").trim();
-const SEATS_CONFIG = JSON.parse(readFileSync(join(__dirname, "seats.json"), "utf8"));
+const DESK_CONFIG = JSON.parse(readFileSync(join(__dirname, "desk.json"), "utf8"));
 
-const GET_SEAT_LINK_TOOL = {
+const SHOW_LINK_TOOL = {
   type: "function",
-  name: "get_seat_link",
+  name: "show_link",
   description:
-    "Return the Stripe Payment Link for a Plumb seat tier when the visitor wants to buy or asks about pricing. Call this when explaining Starter, Pro, or Source so the UI can highlight the Pay card.",
+    "Highlight a desk link card on the visitor's screen and return its URL. Call this when the visitor's question matches a topic so they can open it themselves.",
   parameters: {
     type: "object",
     properties: {
-      tier: {
+      topic: {
         type: "string",
-        enum: ["starter", "pro", "source"],
-        description: "Plumb seat tier: starter ($299), pro ($699), or source ($1999).",
+        enum: DESK_CONFIG.links.map((l) => l.id),
+        description:
+          "phone_check (iPhone/Android checklist), chain_read (what a transaction signed), iris_page (the Iris page), or support (email a human).",
       },
     },
-    required: ["tier"],
+    required: ["topic"],
   },
   execution_mode: "interactive",
   timeout_seconds: 30,
@@ -54,15 +55,15 @@ const app = express();
 app.use(express.static(join(__dirname, "public")));
 
 app.get("/api/health", (_req, res) => {
-  res.json({ ok: true, seats: SEATS_CONFIG.seats.length });
+  res.json({ ok: true, links: DESK_CONFIG.links.length });
 });
 
 app.get("/api/session-config", (_req, res) => {
   res.json({
     system_prompt: SYSTEM_PROMPT,
     greeting: GREETING,
-    seats: SEATS_CONFIG,
-    tools: [GET_SEAT_LINK_TOOL],
+    desk: DESK_CONFIG,
+    tools: [SHOW_LINK_TOOL],
   });
 });
 
@@ -77,14 +78,14 @@ app.get("/api/voice-token", async (_req, res) => {
 
     if (!response.ok) {
       const body = await response.text();
-      console.error(`Token mint failed: ${response.status} ${body}`);
-      return res.status(502).json({ error: "Failed to mint token" });
+      console.error(`Token request failed: ${response.status} ${body}`);
+      return res.status(502).json({ error: "Failed to get token" });
     }
 
     const { token } = await response.json();
     res.json({ token, expires_in_seconds: TOKEN_TTL_SECONDS });
   } catch (err) {
-    console.error("Token mint error:", err);
+    console.error("Token request error:", err);
     res.status(500).json({ error: "Internal error" });
   }
 });

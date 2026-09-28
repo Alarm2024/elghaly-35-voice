@@ -4,7 +4,7 @@
 
 # Iris Desk Voice
 
-Real-time voice desk assistant for visitors of [iris-35.elghaly.dev](https://iris-35.elghaly.dev/), [35.elghaly.dev](https://35.elghaly.dev/), and [Plumb](https://github.com/Alarm2024/plumb35) desk software. Built for the [AssemblyAI Voice Agent Hackathon](https://lablab.ai/ai-hackathons/assemblyai-voice-agent-hackathon) — LabLab team **[elghaly-35-voice](https://lablab.ai/ai-hackathons/assemblyai-voice-agent-hackathon/elghaly-35-voice)**.
+Real-time voice front desk for the [Iris page](https://iris-35.elghaly.dev/), built on the **AssemblyAI Voice Agent API**. Built for the [AssemblyAI Voice Agent Hackathon](https://lablab.ai/ai-hackathons/assemblyai-voice-agent-hackathon) — LabLab team **[elghaly-35-voice](https://lablab.ai/ai-hackathons/assemblyai-voice-agent-hackathon/elghaly-35-voice)**.
 
 **Deadline:** Sep 30, 2026 · **Public byline:** Wyndham Heaven / elghaly
 
@@ -12,28 +12,15 @@ Real-time voice desk assistant for visitors of [iris-35.elghaly.dev](https://iri
 
 ## What it does
 
-**Iris Desk Voice** speaks as a calm front-desk assistant for the **35 / Iris** brand and **Plumb** seats:
+Visitors click **Connect & talk** and ask questions out loud. Iris answers in a calm voice and points them to the right place on screen.
 
-### Two doors (never mixed)
+- **Speech-to-speech in the browser** — live transcripts for both sides; when the visitor interrupts, the agent stops and the reply is marked *interrupted*.
+- **Explains the Iris page** — the iPhone / Android phone check, the chain read (what a Solana, Bitcoin or Ethereum transaction actually signed), offline use and the six languages.
+- **Client tool `show_link(topic)`** — when a question matches a topic (`phone_check`, `chain_read`, `iris_page`, `support`), the agent calls the tool and the matching card on the page is highlighted so the visitor can open it.
+- **Hard refusals (locked in `system-prompt.txt`)** — never asks for or accepts seed phrases, private keys, passwords or API keys; no financial advice; no promises of outcomes; no payments. Redirects to [support@elghaly.dev](mailto:support@elghaly.dev).
+- Mute mic, reconnect, clear transcript and a voice picker.
 
-1. **35 credits** — earned only, never sold, no deposits, not equity. Mint closed until desk PnL.
-2. **Plumb seats** — paid ready desk hunt software you self-host (Starter / Pro / Source). **Telegram control** — menus, reports, eyes. **We build; you continue** — elghaly delivers bot + walkthrough; buyer operates after. **Desk SLA:** ready bot within **3.35 hours** after Stripe payment (lucky-35). Paid seats only — no free trials. Titan/gRPC quoted separately after brief. As-is / no-guarantee terms live in the page footer fine print only.
-
-### Voice + checkout
-
-- Explains 35, SIGHT, Iris FAQs, and Plumb seat tiers in plain English
-- **Tier differences:** Starter (first machine, 1–2 pairs, capped) · Pro (multi-pair, slip/tip, RPC hooks) · Source (source + workshop, you change code). Titan/gRPC not in any seat.
-- **Sales mode:** when asked about price / buy / ready bot / Plumb / "what's the difference" — explains tier and highlights the matching **Stripe Payment Link** on screen
-- Three **Pay** cards on the page (no Stripe.js secrets in repo):
-  - [Starter $299](https://buy.stripe.com/14A6oB4AD7GBd2g3QN3Ru00)
-  - [Pro $699](https://buy.stripe.com/4gM00d4AD2mhfao1IF3Ru01)
-  - [Source $1,999](https://buy.stripe.com/5kQ5kx4AD2mh2nC0EB3Ru02)
-- Client tool `get_seat_link(tier)` returns the URL and pulses the seat card
-- Soft support: [support@elghaly.dev](mailto:support@elghaly.dev)
-
-**Hard refusals (locked in `system-prompt.txt`):** never asks for seeds, private keys, or API secrets; never claims mint is live; never sells 35 credits; never gives trading advice or CLEAR+/go signals; never promises guaranteed profit.
-
-No wallets, seeds, mint logic, or bot keys in this repo — voice + Payment Links only.
+No wallets, seeds or keys in this repo — voice agent and public links.
 
 ---
 
@@ -56,7 +43,7 @@ cp .env.example .env
 npm start
 ```
 
-Open **http://localhost:3000**, click **Connect & talk**, allow the mic, and speak. Pay buttons are always visible — ask Iris about Starter, Pro, or Source to highlight a card.
+Open **http://localhost:3000**, click **Connect & talk**, allow the mic, and speak. Ask about the phone check or reading a transaction to see a card highlight.
 
 **Tip:** Use headphones during development so the agent does not hear its own voice through speakers.
 
@@ -64,7 +51,7 @@ Open **http://localhost:3000**, click **Connect & talk**, allow the mic, and spe
 
 ## Judge demo (60s)
 
-See **[DEMO.md](./DEMO.md)** for the full script: greet → what is 35 → what is Plumb → refuse seed → show Starter Pay link.
+See **[DEMO.md](./DEMO.md)** for the full script: greet → phone check (card highlights) → chain read → interrupt → refuse a seed phrase → mute / reconnect.
 
 ---
 
@@ -74,25 +61,25 @@ See **[DEMO.md](./DEMO.md)** for the full script: greet → what is 35 → what 
 Browser                         Node server                    AssemblyAI
    │                                 │                              │
    │  GET /api/session-config        │                              │
-   │────────────────────────────────>│  (prompt + seats.json)       │
+   │────────────────────────────────>│  (prompt + desk.json + tool) │
    │  GET /api/voice-token           │                              │
    │────────────────────────────────>│  GET agents.assemblyai.com   │
    │                                 │  /v1/token (API key)         │
    │  WebSocket + temp token         │                              │
    │────────────────────────────────────────────────────────────────>│
    │  PCM 24 kHz mono ↑  ·  reply audio + transcripts ↓            │
-   │  tool.call get_seat_link → highlight card + tool.result       │
+   │  tool.call show_link → highlight card + tool.result           │
 ```
 
 | Piece | Role |
 | --- | --- |
-| `server.js` | Static UI, token mint, session config, `/api/health` |
-| `system-prompt.txt` | Desk policy + sales mode — refusal rules not editable in browser |
-| `seats.json` | Public-safe Plumb tiers, prices, Stripe Payment Links (single source) |
-| `public/app.js` | WebSocket client, `get_seat_link` tool, seat highlight, mute/reconnect |
+| `server.js` | Static UI, short-lived token, session config, `/api/health` |
+| `system-prompt.txt` | Desk policy and refusal rules — not editable in the browser |
+| `desk.json` | Link cards the agent can highlight (single source for UI and tool enum) |
+| `public/app.js` | WebSocket client, `show_link` tool, card highlight, mute/reconnect |
 | `public/pcm-processor.js` | Float32 → Int16 PCM at 24 kHz |
 
-Follows the [AssemblyAI Voice Agent tutorial](https://www.assemblyai.com/blog/build-a-voice-assistant-app-with-voice-agent-api): one WebSocket to `wss://agents.assemblyai.com/v1/ws`, API key only on the server.
+Follows the [AssemblyAI Voice Agent tutorial](https://www.assemblyai.com/blog/build-a-voice-assistant-app-with-voice-agent-api): one WebSocket to `wss://agents.assemblyai.com/v1/ws`, API key kept on the server.
 
 ---
 
@@ -100,17 +87,17 @@ Follows the [AssemblyAI Voice Agent tutorial](https://www.assemblyai.com/blog/bu
 
 ```
 ├── server.js              # Express: static + token + session config + health
-├── system-prompt.txt      # Locked Iris Desk policy (edit in repo only)
-├── seats.json             # Plumb seat catalog (Stripe Payment Links)
+├── system-prompt.txt      # Locked Iris desk policy (edit in repo)
+├── desk.json              # Link cards + show_link topics
 ├── DEMO.md                # 60s judge demo script
 ├── Dockerfile             # One-click container deploy
 ├── render.yaml            # Render Blueprint
 ├── fly.toml               # Fly.io config
 ├── public/
-│   ├── index.html         # Iris-branded UI + Plumb seat cards
+│   ├── index.html         # Iris-branded UI + link cards
 │   ├── app.js             # Voice Agent WebSocket client + tools
 │   └── pcm-processor.js   # AudioWorklet PCM encoder
-├── .env.example           # ASSEMBLYAI_API_KEY= only (+ optional PORT)
+├── .env.example           # ASSEMBLYAI_API_KEY= (+ optional PORT)
 └── package.json
 ```
 
@@ -119,20 +106,19 @@ Follows the [AssemblyAI Voice Agent tutorial](https://www.assemblyai.com/blog/bu
 ## Hackathon submit checklist
 
 - [x] Repo is public and linked from [LabLab team page](https://lablab.ai/ai-hackathons/assemblyai-voice-agent-hackathon/elghaly-35-voice)
-- [x] Uses **AssemblyAI Voice Agent API** (token mint + WebSocket streaming + client tool)
+- [x] Uses **AssemblyAI Voice Agent API** (token + WebSocket streaming + client tool)
 - [x] `npm start` works after `cp .env.example .env` + valid API key
-- [x] README explains what, how, team link, and two-door product truth
-- [x] **Plumb seat checkout** — Stripe Payment Links on page + voice sales mode
 - [x] **DEMO.md** — 60s judge script
-- [x] **GET /api/health** → `{ "ok": true, "seats": 3 }`
-- [x] No secrets committed — only `.env.example` with empty key placeholder
-- [ ] Demo video or live URL (optional but recommended for judges)
+- [x] **GET /api/health** → `{ "ok": true, "links": 4 }`
+- [x] No secrets committed — `.env.example` has an empty key placeholder
+- [x] MIT license
+- [ ] Demo video and live URL
 
 ---
 
 ## Deploy (one-click friendly)
 
-The app is a single Node process (`npm start`). Only `ASSEMBLYAI_API_KEY` is required.
+The app is a single Node process (`npm start`). The one required variable is `ASSEMBLYAI_API_KEY`.
 
 ### Docker
 
@@ -165,7 +151,7 @@ Serve over HTTPS for mic access on non-localhost origins.
 
 | Variable | Required | Description |
 | --- | --- | --- |
-| `ASSEMBLYAI_API_KEY` | Yes | Server-only AssemblyAI key for token minting |
+| `ASSEMBLYAI_API_KEY` | Yes | AssemblyAI key, kept on the server and used to issue short-lived browser tokens |
 | `PORT` | No | HTTP port (default `3000`) |
 
 ---
