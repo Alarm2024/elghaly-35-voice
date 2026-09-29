@@ -217,8 +217,30 @@ function setMuted(muted) {
   }
 }
 
+function micSupportError() {
+  if (!window.isSecureContext) return "Mic needs HTTPS";
+  if (!navigator.mediaDevices?.getUserMedia) return "Mic not supported in this browser";
+  if (!window.AudioWorkletNode) return "Browser too old (no AudioWorklet)";
+  return null;
+}
+
 async function connect() {
+  const unsupported = micSupportError();
+  if (unsupported) {
+    setStatus("error", unsupported);
+    return;
+  }
+
   els.connect.disabled = true;
+
+  // Create and resume the AudioContext synchronously inside the tap/click handler.
+  // iOS Safari (and some Android browsers) keep a context created after an await
+  // suspended, which silences playback and stops the mic worklet. Use the device's
+  // native rate; pcm-processor.js resamples the mic to 24 kHz.
+  if (audioCtx) audioCtx.close().catch(() => {});
+  audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  audioCtx.resume().catch(() => {});
+
   setStatus("connecting", "Loading desk policy…");
 
   try {
@@ -227,7 +249,7 @@ async function connect() {
   } catch (err) {
     console.error(err);
     setStatus("error", "Config error");
-    els.connect.disabled = false;
+    failConnect();
     return;
   }
 
@@ -239,19 +261,10 @@ async function connect() {
   } catch (err) {
     console.error(err);
     setStatus("error", "Token error");
-    els.connect.disabled = false;
+    failConnect();
     return;
   }
 
-  if (audioCtx) {
-    try {
-      audioCtx.close();
-    } catch (_) {}
-  }
-
-  audioCtx = new (window.AudioContext || window.webkitAudioContext)({
-    sampleRate: SAMPLE_RATE,
-  });
   playbackTime = audioCtx.currentTime;
   scheduledSources = [];
   pendingToolResults = [];
@@ -268,16 +281,24 @@ async function connect() {
     });
   } catch (err) {
     console.error("Mic permission denied:", err);
-    setStatus("error", "Mic blocked");
-    els.connect.disabled = false;
+    setStatus("error", "Mic blocked — allow microphone and retry");
+    failConnect();
     return;
   }
 
   setMuted(false);
 
-  await audioCtx.audioWorklet.addModule("pcm-processor.js");
-  micSource = audioCtx.createMediaStreamSource(micStream);
-  workletNode = new AudioWorkletNode(audioCtx, "pcm-processor");
+  try {
+    await audioCtx.audioWorklet.addModule("pcm-processor.js");
+    micSource = audioCtx.createMediaStreamSource(micStream);
+    workletNode = new AudioWorkletNode(audioCtx, "pcm-processor");
+    await audioCtx.resume();
+  } catch (err) {
+    console.error("Audio setup failed:", err);
+    setStatus("error", "Audio setup failed");
+    failConnect();
+    return;
+  }
 
   setStatus("connecting", "Connecting…");
   ws = new WebSocket(`${WS_URL}?token=${encodeURIComponent(token)}`);
@@ -297,16 +318,24 @@ async function connect() {
     );
   };
 
-  ws.onmessage = (evt) => handleEvent(JSON.parse(evt.data));
+  ws.onmessage = (evt) => {
+    if (ws === thisWs) handleEvent(JSON.parse(evt.data));
+  };
 
+  const thisWs = ws;
+  let sawError = false;
   ws.onerror = (err) => {
     console.error("WebSocket error:", err);
-    setStatus("error", "Connection error");
+    sawError = true;
   };
 
   ws.onclose = (evt) => {
     console.log("WebSocket closed:", evt.code, evt.reason);
+    if (ws !== thisWs) return; // a newer session already replaced this one
     teardown(false);
+    if (sawError || evt.code !== 1000) {
+      setStatus("error", "Disconnected (" + evt.code + (evt.reason ? ": " + evt.reason : "") + ")");
+    }
   };
 
   workletNode.port.onmessage = (e) => {
@@ -401,6 +430,7 @@ function handleEvent(event) {
 }
 
 function playPCM(b64) {
+  if (!audioCtx) return;
   const bytes = Uint8Array.from(atob(b64), (c) => c.charCodeAt(0));
   const int16 = new Int16Array(
     bytes.buffer,
@@ -435,7 +465,17 @@ function flushPlayback() {
     } catch (_) {}
   }
   scheduledSources = [];
-  playbackTime = audioCtx.currentTime;
+  if (audioCtx) playbackTime = audioCtx.currentTime;
+}
+
+function failConnect() {
+  try {
+    micStream && micStream.getTracks().forEach((t) => t.stop());
+  } catch (_) {}
+  if (audioCtx) audioCtx.close().catch(() => {});
+  audioCtx = null;
+  micStream = null;
+  els.connect.disabled = false;
 }
 
 function teardown(resetReconnect = true) {
@@ -448,9 +488,7 @@ function teardown(resetReconnect = true) {
   try {
     micStream && micStream.getTracks().forEach((t) => t.stop());
   } catch (_) {}
-  try {
-    audioCtx && audioCtx.close();
-  } catch (_) {}
+  if (audioCtx) audioCtx.close().catch(() => {});
   ws = null;
   audioCtx = null;
   micStream = null;
@@ -472,8 +510,13 @@ function teardown(resetReconnect = true) {
 }
 
 function disconnect() {
-  if (ws && ws.readyState === WebSocket.OPEN) ws.close();
-  else teardown();
+  if (ws && ws.readyState === WebSocket.OPEN) {
+    const old = ws;
+    teardown();
+    old.close(1000);
+  } else {
+    teardown();
+  }
 }
 
 async function reconnect() {
@@ -496,6 +539,12 @@ function arrayBufferToBase64(buf) {
 fetchSessionConfig()
   .then((cfg) => renderLinkCards(cfg.desk))
   .catch((err) => console.warn("Desk link preload failed:", err));
+
+document.addEventListener("visibilitychange", () => {
+  if (document.visibilityState === "visible" && audioCtx && audioCtx.state !== "running") {
+    audioCtx.resume().catch(() => {});
+  }
+});
 
 els.connect.addEventListener("click", connect);
 els.disconnect.addEventListener("click", disconnect);
