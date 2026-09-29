@@ -2,7 +2,7 @@
 
 **Owner:** Wyndham Heaven / elghaly · **Team:** [elghaly-35-voice](https://lablab.ai/ai-hackathons/assemblyai-voice-agent-hackathon/elghaly-35-voice)
 
-Use headphones. Open the deployed app or `http://localhost:3000`.
+Use headphones. Open the live app at **https://iris-desk-voice.onrender.com** (or `http://localhost:3000`). On Render's free plan the first load after idle can take ~30–60 s, so open it once before recording.
 
 ---
 
@@ -36,6 +36,6 @@ Use headphones. Open the deployed app or `http://localhost:3000`.
 ## Health check (for deploy verification)
 
 ```bash
-curl -s https://YOUR-DEPLOY-URL/api/health
+curl -s https://iris-desk-voice.onrender.com/api/health
 # {"ok":true,"links":4}
 ```

@@ -54,6 +54,9 @@ const app = express();
 
 app.use(express.static(join(__dirname, "public")));
 
+// Browsers still probe /favicon.ico; point them at the SVG icon instead of a 404.
+app.get("/favicon.ico", (_req, res) => res.redirect(301, "/favicon.svg"));
+
 app.get("/api/health", (_req, res) => {
   res.json({ ok: true, links: DESK_CONFIG.links.length });
 });
