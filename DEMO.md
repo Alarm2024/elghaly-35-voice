@@ -1,5 +1,7 @@
 # Iris Desk Voice — 60-second judge demo script
 
+**Recorded demo video:** https://iris-desk-voice.onrender.com/demo.mp4 (also embedded on the app page below the talk button)
+
 **Owner:** Wyndham Heaven / elghaly · **Team:** [elghaly-35-voice](https://lablab.ai/ai-hackathons/assemblyai-voice-agent-hackathon/elghaly-35-voice)
 
 Use headphones. Open the live app at **https://iris-desk-voice.onrender.com** (or `http://localhost:3000`). On Render's free plan the first load after idle can take ~30–60 s, so open it once before recording.

@@ -52,14 +52,28 @@ const SHOW_LINK_TOOL = {
 
 const app = express();
 
-app.use(express.static(join(__dirname, "public")));
+// express.static (send) sets Content-Type from the extension (.mp4 -> video/mp4) and
+// answers Range requests with 206, which iPhone Safari needs for <video>.
+app.use(
+  express.static(join(__dirname, "public"), {
+    setHeaders(res, path) {
+      if (path.endsWith(".mp4")) {
+        res.setHeader("Content-Type", "video/mp4");
+        res.setHeader("Accept-Ranges", "bytes");
+        res.setHeader("Cache-Control", "public, max-age=86400");
+      }
+    },
+  }),
+);
 
 // Browsers still probe /favicon.ico; point them at the SVG icon instead of a 404.
 app.get("/favicon.ico", (_req, res) => res.redirect(301, "/favicon.svg"));
 
-app.get("/api/health", (_req, res) => {
+const health = (_req, res) => {
   res.json({ ok: true, links: DESK_CONFIG.links.length });
-});
+};
+app.get("/api/health", health);
+app.get("/health", health);
 
 app.get("/api/session-config", (_req, res) => {
   res.json({

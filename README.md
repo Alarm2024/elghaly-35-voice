@@ -8,6 +8,8 @@ Real-time voice front desk for the [Iris page](https://iris-35.elghaly.dev/), bu
 
 **Live demo:** https://iris-desk-voice.onrender.com (Render free plan; the first load after idle can take ~30–60 s)
 
+**Demo video:** https://iris-desk-voice.onrender.com/demo.mp4 (also embedded on the app page, plays on iPhone)
+
 **Deadline:** Sep 30, 2026 · **Public byline:** Wyndham Heaven / elghaly
 
 ---
@@ -75,7 +77,7 @@ Browser                         Node server                    AssemblyAI
 
 | Piece | Role |
 | --- | --- |
-| `server.js` | Static UI, short-lived token, session config, `/api/health` |
+| `server.js` | Static UI, short-lived token, session config, `/api/health` (also `/health`), `/demo.mp4` |
 | `system-prompt.txt` | Desk policy and refusal rules — not editable in the browser |
 | `desk.json` | Link cards the agent can highlight (single source for UI and tool enum) |
 | `public/app.js` | WebSocket client, `show_link` tool, card highlight, mute/reconnect |
@@ -115,7 +117,7 @@ Follows the [AssemblyAI Voice Agent tutorial](https://www.assemblyai.com/blog/bu
 - [x] No secrets committed — `.env.example` has an empty key placeholder
 - [x] MIT license
 - [x] Live URL — https://iris-desk-voice.onrender.com
-- [ ] Demo video
+- [x] Demo video — https://iris-desk-voice.onrender.com/demo.mp4
 
 ---
 

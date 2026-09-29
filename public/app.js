@@ -31,6 +31,51 @@ let micStream = null;
 let workletNode = null;
 let micSource = null;
 let playbackTime = 0;
+// Output chain: sources -> gain (boost, iPhone speaker is quiet) -> compressor/limiter -> speakers.
+const OUTPUT_GAIN = 1.7;
+let outputNode = null;
+
+function getOutputNode() {
+  if (!audioCtx) return null;
+  if (outputNode && outputNode.context === audioCtx) return outputNode;
+  const gain = audioCtx.createGain();
+  gain.gain.value = OUTPUT_GAIN;
+  const limiter = audioCtx.createDynamicsCompressor();
+  limiter.threshold.value = -6;
+  limiter.knee.value = 6;
+  limiter.ratio.value = 20;
+  limiter.attack.value = 0.003;
+  limiter.release.value = 0.15;
+  gain.connect(limiter);
+  limiter.connect(audioCtx.destination);
+  outputNode = gain;
+  return outputNode;
+}
+
+// Big talk button states: idle | connecting | live | muted
+function setTalkState(state) {
+  const btn = els.connect;
+  btn.dataset.state = state;
+  const label = btn.querySelector(".talk-label");
+  const sub = btn.querySelector(".talk-sub");
+  const icon = btn.querySelector(".talk-icon");
+  if (state === "connecting") {
+    icon.textContent = "🎙️";
+    label.textContent = "Connecting…";
+    sub.textContent = "Allow the microphone if asked";
+    btn.setAttribute("aria-pressed", "false");
+  } else if (state === "live" || state === "muted") {
+    icon.textContent = "⏹";
+    label.textContent = "Stop";
+    sub.textContent = state === "muted" ? "Mic muted · tap to end" : "Listening… tap to end";
+    btn.setAttribute("aria-pressed", "true");
+  } else {
+    icon.textContent = "🎙️";
+    label.textContent = "Connect & talk";
+    sub.textContent = "Tap, then speak";
+    btn.setAttribute("aria-pressed", "false");
+  }
+}
 let scheduledSources = [];
 let userPartialEl = null;
 let agentPartialEl = null;
@@ -202,7 +247,8 @@ async function fetchToken() {
 
 function updateConnectionControls(connected) {
   isConnected = connected;
-  els.connect.disabled = connected;
+  els.connect.disabled = false;
+  setTalkState(connected ? (isMuted ? "muted" : "live") : "idle");
   els.disconnect.disabled = !connected;
   els.reconnect.disabled = !connected;
   els.mute.disabled = !connected;
@@ -218,6 +264,7 @@ function setMuted(muted) {
   }
   els.mute.textContent = muted ? "Unmute mic" : "Mute mic";
   els.mute.classList.toggle("active", muted);
+  if (isConnected) setTalkState(muted ? "muted" : "live");
   if (isConnected) {
     setStatus(muted ? "muted" : "connected", muted ? "Connected (mic muted)" : "Connected");
   }
@@ -238,6 +285,7 @@ async function connect() {
   }
 
   els.connect.disabled = true;
+  setTalkState("connecting");
 
   // Create and resume the AudioContext synchronously inside the tap/click handler.
   // iOS Safari (and some Android browsers) keep a context created after an await
@@ -462,7 +510,7 @@ function playPCM(b64) {
 
   const source = audioCtx.createBufferSource();
   source.buffer = buffer;
-  source.connect(audioCtx.destination);
+  source.connect(getOutputNode() || audioCtx.destination);
 
   const now = audioCtx.currentTime;
   if (playbackTime < now) playbackTime = now;
@@ -492,7 +540,9 @@ function failConnect() {
   if (audioCtx) audioCtx.close().catch(() => {});
   audioCtx = null;
   micStream = null;
+  outputNode = null;
   els.connect.disabled = false;
+  setTalkState("idle");
 }
 
 function teardown(resetReconnect = true) {
@@ -508,6 +558,7 @@ function teardown(resetReconnect = true) {
   if (audioCtx) audioCtx.close().catch(() => {});
   ws = null;
   audioCtx = null;
+  outputNode = null;
   micStream = null;
   workletNode = null;
   micSource = null;
@@ -565,7 +616,12 @@ document.addEventListener("visibilitychange", () => {
   }
 });
 
-els.connect.addEventListener("click", connect);
+// One big toggle: tap to start (connect() runs synchronously inside the tap, so the
+// AudioContext is still created in the user gesture), tap again to stop.
+els.connect.addEventListener("click", () => {
+  if (isConnected) disconnect();
+  else connect();
+});
 els.disconnect.addEventListener("click", disconnect);
 els.reconnect.addEventListener("click", reconnect);
 els.mute.addEventListener("click", () => setMuted(!isMuted));
