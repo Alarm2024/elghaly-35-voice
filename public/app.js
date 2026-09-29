@@ -34,6 +34,11 @@ let playbackTime = 0;
 let scheduledSources = [];
 let userPartialEl = null;
 let agentPartialEl = null;
+// Agent bubbles keyed by reply_id. The API can send a final transcript.agent for a
+// reply before its reply.started (repeating the previous reply's text); those are
+// ignored so the greeting is not shown twice.
+let agentReplies = new Map(); // reply_id -> { el, text }
+let startedReplies = new Set();
 let isMuted = false;
 let isConnected = false;
 let pendingToolResults = [];
@@ -50,6 +55,7 @@ function clearTranscript() {
   els.transcript.appendChild(els.empty);
   userPartialEl = null;
   agentPartialEl = null;
+  agentReplies = new Map();
 }
 
 function ensureBubble(role, partial = false) {
@@ -375,31 +381,42 @@ function handleEvent(event) {
       playPCM(event.data);
       break;
 
-    case "transcript.agent.delta":
-      if (!agentPartialEl) agentPartialEl = ensureBubble("agent", true);
-      agentPartialEl.textContent = event.text;
-      els.transcript.scrollTop = els.transcript.scrollHeight;
+    case "reply.started":
+      if (event.reply_id) startedReplies.add(event.reply_id);
       break;
 
+    case "transcript.agent.delta": {
+      // Deltas carry one word in `delta`; build the running text per reply.
+      const id = event.reply_id || "_";
+      let r = agentReplies.get(id);
+      if (!r) {
+        r = { el: ensureBubble("agent", true), text: "" };
+        agentReplies.set(id, r);
+      }
+      if (typeof event.text === "string") r.text = event.text;
+      else if (event.delta) r.text = r.text ? r.text + " " + event.delta : event.delta;
+      if (r.el.classList.contains("partial")) r.el.textContent = r.text;
+      els.transcript.scrollTop = els.transcript.scrollHeight;
+      break;
+    }
+
     case "transcript.agent": {
-      if (agentPartialEl) {
-        agentPartialEl.classList.remove("partial");
-        agentPartialEl.textContent = event.text;
-        agentPartialEl = null;
-      } else {
-        addBubble("agent", event.text);
+      const id = event.reply_id || "_";
+      let r = agentReplies.get(id);
+      if (!r && event.reply_id && !startedReplies.has(event.reply_id)) break;
+      if (!r) {
+        r = { el: ensureBubble("agent"), text: "" };
+        agentReplies.set(id, r);
       }
-      const meta = event.interrupted ? "interrupted" : null;
-      if (meta) {
-        const bubbles = els.transcript.querySelectorAll(".bubble.agent");
-        const last = bubbles[bubbles.length - 1];
-        if (last && !last.querySelector(".meta")) {
-          const span = document.createElement("span");
-          span.className = "meta";
-          span.textContent = meta;
-          last.appendChild(span);
-        }
+      r.el.classList.remove("partial");
+      r.el.textContent = event.text;
+      if (event.interrupted) {
+        const span = document.createElement("span");
+        span.className = "meta";
+        span.textContent = "interrupted";
+        r.el.appendChild(span);
       }
+      els.transcript.scrollTop = els.transcript.scrollHeight;
       break;
     }
 
@@ -497,6 +514,8 @@ function teardown(resetReconnect = true) {
   scheduledSources = [];
   userPartialEl = null;
   agentPartialEl = null;
+  agentReplies = new Map();
+  startedReplies = new Set();
   pendingToolResults = [];
   lastEventType = null;
   isMuted = false;

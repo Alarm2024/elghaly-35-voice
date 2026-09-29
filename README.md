@@ -6,6 +6,8 @@
 
 Real-time voice front desk for the [Iris page](https://iris-35.elghaly.dev/), built on the **AssemblyAI Voice Agent API**. Built for the [AssemblyAI Voice Agent Hackathon](https://lablab.ai/ai-hackathons/assemblyai-voice-agent-hackathon) — LabLab team **[elghaly-35-voice](https://lablab.ai/ai-hackathons/assemblyai-voice-agent-hackathon/elghaly-35-voice)**.
 
+**Live demo:** https://iris-desk-voice.onrender.com (Render free plan; the first load after idle can take ~30–60 s)
+
 **Deadline:** Sep 30, 2026 · **Public byline:** Wyndham Heaven / elghaly
 
 ---
@@ -30,7 +32,7 @@ No wallets, seeds or keys in this repo — voice agent and public links.
 
 - **Node.js 18+**
 - **AssemblyAI API key** — [sign up free](https://www.assemblyai.com/dashboard/signup)
-- A modern browser with microphone (Chrome, Firefox, Safari 14.1+)
+- A modern browser with microphone (Chrome, Firefox, Safari 14.1+), desktop or phone
 
 ### Run locally
 
@@ -112,7 +114,8 @@ Follows the [AssemblyAI Voice Agent tutorial](https://www.assemblyai.com/blog/bu
 - [x] **GET /api/health** → `{ "ok": true, "links": 4 }`
 - [x] No secrets committed — `.env.example` has an empty key placeholder
 - [x] MIT license
-- [ ] Demo video and live URL
+- [x] Live URL — https://iris-desk-voice.onrender.com
+- [ ] Demo video
 
 ---
 
